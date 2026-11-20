@@ -221,10 +221,9 @@ function drawMap(){
  const fx=Math.sin(yaw),fy=Math.cos(yaw),px=fy,py=-fx;
  if(missionStarted&&!missionDone){
  const dest=missions[checkpointIndex].point,snap=v=>Math.round(v/30)*30,sx=snap(p.x),sz=snap(p.z),dx=snap(dest.x),dz=snap(dest.z);
- const hCost=Math.abs(p.z-sz)+Math.abs(p.x-dx)+Math.abs(sz-dz),vCost=Math.abs(p.x-sx)+Math.abs(p.z-dz)+Math.abs(sx-dx);
- const path=hCost<=vCost?[{x:p.x,z:sz},{x:dx,z:sz},{x:dest.x,z:dz}]:[{x:sx,z:p.z},{x:sx,z:dz},{x:dest.x,z:dz}];
+ const hCost=Math.abs(p.z-sz)+Math.abs(p.x-dx)+Math.abs(sz-dz)+Math.abs(dx-dest.x),vCost=Math.abs(p.x-sx)+Math.abs(p.z-dz)+Math.abs(sx-dx)+Math.abs(dx-dest.x);
+ const path=hCost<=vCost?[{x:p.x,z:sz},{x:dx,z:sz},{x:dx,z:dz},{x:dest.x,z:dz}]:[{x:sx,z:p.z},{x:sx,z:dz},{x:dx,z:dz},{x:dest.x,z:dz}];
  ctx.strokeStyle='rgba(255,190,112,.95)';ctx.lineWidth=3;ctx.lineCap='round';ctx.lineJoin='round';ctx.setLineDash([]);ctx.beginPath();ctx.moveTo(mx,my);path.forEach(q=>ctx.lineTo(150+q.x*.78,150+q.z*.78));ctx.stroke();
- ctx.fillStyle='#ffbd72';ctx.beginPath();ctx.arc(150+dest.x*.78,150+dest.z*.78,3,0,Math.PI*2);ctx.fill();
  }
  ctx.fillStyle='#fff';ctx.strokeStyle='#0b1720';ctx.lineWidth=2;
  ctx.beginPath();ctx.moveTo(mx+fx*12,my+fy*12);ctx.lineTo(mx-fx*8+px*6,my-fy*8+py*6);ctx.lineTo(mx-fx*4,my-fy*4);ctx.lineTo(mx-fx*8-px*6,my-fy*8-py*6);ctx.closePath();ctx.fill();ctx.stroke();
