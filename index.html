@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vice City Stories</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap');
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07111b;color:#fff;font-family:Inter,Arial,sans-serif}canvas#game{display:block;width:100%;height:100%}
+#vignette{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 42%,rgba(3,8,16,.5) 100%);z-index:2}
+#top{position:fixed;top:22px;left:24px;z-index:5;display:flex;align-items:flex-start;gap:12px}
+.logo{font:900 28px 'Barlow Condensed';letter-spacing:2px;line-height:.9;text-shadow:0 3px 20px #000}.logo span{color:#ffb35c}
+#district{font-size:10px;letter-spacing:2px;color:#b7c9d4;margin-top:6px;text-transform:uppercase}
+#mission{position:fixed;left:24px;top:100px;z-index:5;width:290px;padding:17px 18px;background:linear-gradient(110deg,rgba(7,19,30,.9),rgba(7,19,30,.55));border-left:3px solid #ffb35c;backdrop-filter:blur(12px)}
+.eyebrow{font-size:9px;letter-spacing:2.4px;color:#ffbd72;font-weight:800;text-transform:uppercase}#mission h2{font:800 24px 'Barlow Condensed';letter-spacing:.5px;margin:5px 0 5px}#mission p{font-size:11px;line-height:1.6;color:#c5d1d8;margin:0 0 12px}
+#objective{font-size:10px;color:#fff;display:flex;align-items:center;gap:8px}#objective:before{content:'';width:7px;height:7px;border-radius:50%;background:#ffb35c;box-shadow:0 0 12px #ffb35c}
+#stats{position:fixed;right:24px;top:22px;z-index:5;display:flex;gap:8px}.stat{min-width:90px;padding:10px 13px;background:rgba(7,19,30,.72);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(10px)}.stat small{display:block;color:#8fa6b5;font-size:8px;letter-spacing:1.6px;font-weight:700}.stat strong{display:block;font:700 19px 'Barlow Condensed';margin-top:2px}
+#mapwrap{position:fixed;right:24px;bottom:24px;width:164px;height:164px;padding:5px;background:rgba(7,19,30,.8);border:1px solid rgba(255,255,255,.2);z-index:5;clip-path:polygon(0 0,100% 0,100% 88%,88% 100%,0 100%)}#map{width:100%;height:100%}
+#controls{position:fixed;left:24px;bottom:24px;z-index:5;color:#b6c6cf;font-size:9px;letter-spacing:.5px;line-height:1.9;text-shadow:0 2px 6px #000}kbd{display:inline-block;border:1px solid #71828b;border-radius:3px;padding:0px 5px;color:#fff;font:700 9px Inter;background:rgba(0,0,0,.35);margin-right:3px}
+#toast{position:fixed;left:50%;top:22%;transform:translate(-50%,-10px);z-index:8;padding:12px 22px;background:rgba(5,16,25,.88);border:1px solid rgba(255,179,92,.6);font-size:11px;letter-spacing:1px;opacity:0;transition:.25s;pointer-events:none}#toast.show{opacity:1;transform:translate(-50%,0)}
+#start{position:fixed;inset:0;z-index:10;display:grid;place-items:center;background:linear-gradient(90deg,rgba(3,10,18,.93),rgba(3,10,18,.4)),linear-gradient(0deg,rgba(3,10,18,.8),transparent 65%);transition:opacity .7s}
+.startbox{width:min(680px,90vw);margin-left:min(0px,0px)}.pretitle{font-size:10px;letter-spacing:5px;color:#ffbd72;font-weight:800}.startbox h1{font:900 clamp(58px,10vw,112px)/.78 'Barlow Condensed';letter-spacing:-2px;margin:17px 0 18px;text-transform:uppercase;text-shadow:0 8px 40px #000}.startbox h1 span{color:#ffb35c}.startbox p{max-width:410px;color:#c1cdd4;font-size:12px;line-height:1.8}.startbox button{margin-top:22px;background:#ffb35c;color:#101923;border:0;padding:14px 28px;font:900 12px Inter;letter-spacing:2px;cursor:pointer;clip-path:polygon(0 0,100% 0,100% 75%,94% 100%,0 100%);transition:.2s}.startbox button:hover{background:#ffd09b;transform:translateY(-2px)}.foot{margin-top:48px;font-size:9px!important;letter-spacing:2px;color:#718997!important}
+#complete{position:fixed;inset:0;z-index:9;display:none;place-items:center;background:rgba(3,10,18,.75);backdrop-filter:blur(8px)}#complete .panel{text-align:center;padding:40px;border:1px solid rgba(255,179,92,.5);background:#0a1a27}#complete h2{font:900 50px 'Barlow Condensed';margin:8px}#complete p{font-size:12px;color:#b9c9d3}#complete button{margin-top:15px;background:#ffb35c;border:0;padding:12px 20px;font-weight:800;cursor:pointer}
+@media(max-width:650px){#mission{top:90px;left:12px;width:230px;padding:12px}#stats{right:12px;top:auto;bottom:200px;flex-direction:column}.stat{min-width:70px;padding:7px 9px}#mapwrap{right:12px;bottom:12px;width:135px;height:135px}#top{left:12px;top:14px}#controls{left:12px;bottom:12px;font-size:8px}.logo{font-size:23px}}
+</style>
+</head>
+<body>
+<canvas id="game"></canvas><div id="vignette"></div>
+<div id="top"><div><div class="logo">VICE CITY <span>STORIES</span></div><div id="district">SUNSET DISTRICT · 1986</div></div></div>
+<div id="mission"><div class="eyebrow">Missão principal · 01</div><h2>PRIMEIRO DIA NA CIDADE</h2><p>Chegaste a Vice City. Vai buscar o carro e percorre os três pontos de interesse para conheceres o bairro.</p><div id="objective">Encontra o carro assinalado</div></div>
+<div id="stats"><div class="stat"><small>DINHEIRO</small><strong id="money">€ 250</strong></div><div class="stat"><small>VELOCIDADE</small><strong id="speed">0 <small style="display:inline;font-size:9px">KM/H</small></strong></div></div>
+<div id="mapwrap"><canvas id="map" width="300" height="300"></canvas></div>
+<div id="controls"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> MOVER / CONDUZIR<br><kbd>SHIFT</kbd> CORRER &nbsp; <kbd>E</kbd> ENTRAR / SAIR DO CARRO<br><kbd>R</kbd> REINICIAR POSIÇÃO</div>
+<div id="toast"></div>
+<div id="start"><div class="startbox"><div class="pretitle">UMA CIDADE. MIL HISTÓRIAS.</div><h1>VICE CITY<br><span>STORIES</span></h1><p>Uma cidade aberta à tua espera. Explora as ruas, descobre os seus recantos, conduz pela marginal e constrói o teu caminho.</p><button id="play">ENTRAR NA CIDADE&nbsp; →</button><p class="foot">DEMO 0.1 · PROJETO ORIGINAL · 3D OPEN WORLD</p></div></div>
+<div id="complete"><div class="panel"><div class="eyebrow">Missão concluída</div><h2>JÁ ÉS DA CIDADE.</h2><p>Exploraste os principais pontos de Sunset District.</p><h2 style="color:#ffb35c">+ € 500</h2><button id="again">CONTINUAR A EXPLORAR</button></div></div>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+const canvas=document.querySelector('#game');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x8bb8c2);scene.fog=new THREE.FogExp2(0x8bb8c2,.0065);
+const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,.1,500);
+scene.add(new THREE.HemisphereLight(0xc5e6ff,0x45515a,2));
+const sun=new THREE.DirectionalLight(0xffe0b0,3.2);sun.position.set(-45,75,35);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-100;sun.shadow.camera.right=100;sun.shadow.camera.top=100;sun.shadow.camera.bottom=-100;scene.add(sun);
+const mat=(c,r=.85,m=0)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m});
+const asphalt=mat(0x303a43),sidewalk=mat(0x9a9b91),sand=mat(0xc9ad83),white=mat(0xf2eee0),glass= new THREE.MeshStandardMaterial({color:0x6fabb9,roughness:.2,metalness:.35}),palmMat=mat(0x526c4a),trunkMat=mat(0x806044),yellow=mat(0xffc15e),blue=mat(0x237f9d),dark=mat(0x17232d),pink=mat(0xd97e83),green=mat(0x477b65);
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(500,500),mat(0x9caa91));ground.rotation.x=-Math.PI/2;ground.position.y=-.18;ground.receiveShadow=true;scene.add(ground);
+const roadGroup=new THREE.Group();scene.add(roadGroup);
+function box(parent,x,y,z,w,h,d,material,shadow=true){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);o.position.set(x,y,z);o.castShadow=shadow;o.receiveShadow=true;parent.add(o);return o}
+for(let i=-4;i<=4;i++){let z=i*24;box(roadGroup,0,-.08,z,220,.16,12,asphalt,false);box(roadGroup,0,.015,z,220,.025,.16,yellow,false);for(let x=-105;x<110;x+=9)box(roadGroup,x,.015,z+3.1,4,.025,.13,white,false)}
+for(let i=-4;i<=4;i++){let x=i*24;box(roadGroup,x,-.07,0,12,.16,220,asphalt,false);box(roadGroup,x,.015,0,.15,.025,220,yellow,false)}
+for(let i=-4;i<=4;i++)for(let j=-4;j<=4;j++){let x=i*24,z=j*24;if(Math.abs(i)<2&&Math.abs(j)<2){}box(roadGroup,x+9,-.01,z+9,6,.22,6,sidewalk,false)}
+// waterfront and promenade
+const sea=new THREE.Mesh(new THREE.PlaneGeometry(500,100),new THREE.MeshStandardMaterial({color:0x398c9b,roughness:.28,metalness:.1}));sea.rotation.x=-Math.PI/2;sea.position.set(0,-.25,-170);scene.add(sea);
+box(scene,0,-.02,-117,220,.2,8,sand,false);
+function palm(x,z,s=1){const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);const t=new THREE.Mesh(new THREE.CylinderGeometry(.18*s,.3*s,5*s,7),trunkMat);t.position.y=2.5*s;t.rotation.z=-.12;t.castShadow=true;g.add(t);for(let k=0;k<7;k++){const a=k*Math.PI*2/7;const leaf=new THREE.Mesh(new THREE.BoxGeometry(.45*s,.12*s,3.7*s),palmMat);leaf.position.set(Math.sin(a)*1.5*s,5*s,Math.cos(a)*1.5*s);leaf.rotation.y=a;leaf.rotation.x=-.3;leaf.castShadow=true;g.add(leaf)}}
+for(let x=-100;x<=100;x+=14){palm(x,-108,.9);palm(x,108,.8)}
+// procedural city blocks
+let seed=17;function rand(){seed=(seed*9301+49297)%233280;return seed/233280}
+const buildingMats=[mat(0xe5c9a6),mat(0xd6a98e),mat(0xc5d2cb),mat(0xe9d9b9),mat(0xb6c7c5),mat(0xd8b8c2),mat(0xaaaeb1)];
+for(let i=-4;i<=4;i++)for(let j=-4;j<=4;j++){if(Math.abs(i)<2&&Math.abs(j)<2)continue;let cx=i*24+(rand()-.5)*3,cz=j*24+(rand()-.5)*3;if(cz<-122)continue;let w=8+rand()*5,d=8+rand()*5,h=7+rand()*26;if(rand()>.82)h+=18;let b=box(scene,cx,h/2,cz,w,h,d,buildingMats[Math.floor(rand()*buildingMats.length)]);b.material=buildingMats[Math.floor(rand()*buildingMats.length)];box(scene,cx,h+.2,cz,w*.75,.35,d*.75,mat(0x6c7777));for(let yy=2.3;yy<h-1;yy+=2.6){for(let xx=-w/2+1;xx<w/2-0.4;xx+=1.8){box(scene,cx+xx,yy,cz+d/2+.025,1,.95,.06,glass,false);box(scene,cx+xx,yy,cz-d/2-.025,1,.95,.06,glass,false)}}}
+// a few shops
+for(const [x,z,c,label] of [[-12,12,0xd57b68,'MOTEL'],[12,-12,0x5b9b9b,'CAFE'],[-12,-36,0xd7b45d,'MARKET']]){box(scene,x,3.2,z,9,6.4,8,mat(c));box(scene,x,5,z+4.06,5,.7,.1,white);}
+// character
+const player=new THREE.Group();scene.add(player);const body=box(player,0,1.1,0,.8,1.1,.45,blue);const head=new THREE.Mesh(new THREE.SphereGeometry(.32,16,12),mat(0xc98f6a));head.position.y=1.95;player.add(head);const hair=new THREE.Mesh(new THREE.SphereGeometry(.33,12,8),dark);hair.scale.y=.45;hair.position.set(0,2.16,0);player.add(hair);const leg1=box(player,-.22,.35,0,.25,.7,.3,dark),leg2=box(player,.22,.35,0,.25,.7,.3,dark);player.position.set(0,0,0);
+function makeCar(color=0xe8a64f){const g=new THREE.Group();box(g,0,.55,0,2.2,.65,4.2,mat(color,.35,.3));box(g,0,1.05,-.15,1.8,.7,2.15,glass);box(g,0,.26,1.95,1.9,.18,.12,white,false);for(const x of [-1,1])for(const z of [-1.35,1.35]){const w=new THREE.Mesh(new THREE.CylinderGeometry(.37,.37,.2,16),dark);w.rotation.z=Math.PI/2;w.position.set(x*1.08,.38,z);g.add(w)}for(const x of [-.72,.72]){box(g,x,.65,2.12,.25,.18,.08,white,false);box(g,x,.65,-2.12,.25,.18,.08,pink,false)}return g}
+const car=makeCar();car.position.set(10,0,8);scene.add(car);
+const cars=[];for(let i=0;i<7;i++){const c=makeCar([0x4f91a8,0xe7d4b1,0xc86f64,0x4d665b,0xe1b64e][i%5]);c.position.set(-72+i*23,0,46+(i%2)*9);c.rotation.y=Math.PI/2;scene.add(c);cars.push(c)}
+// mission checkpoints
+const checkpoints=[new THREE.Vector3(0,0,-42),new THREE.Vector3(48,0,-48),new THREE.Vector3(48,0,48)];let checkpointIndex=-1,missionStarted=false,missionDone=false;
+const rings=[];checkpoints.forEach((p,i)=>{const ring=new THREE.Mesh(new THREE.TorusGeometry(2.3,.22,8,28),yellow);ring.rotation.x=Math.PI/2;ring.position.set(p.x,1.4,p.z);scene.add(ring);rings.push(ring);const beam=new THREE.Mesh(new THREE.CylinderGeometry(.06,.06,3,8),new THREE.MeshBasicMaterial({color:0xffbb66,transparent:true,opacity:.3}));beam.position.set(p.x,1.5,p.z);scene.add(beam)});
+const keys={};addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(['w','a','s','d',' '].includes(e.key.toLowerCase()))e.preventDefault();if(e.key.toLowerCase()==='e')toggleCar();if(e.key.toLowerCase()==='r')resetPosition()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+let inCar=false,carSpeed=0,heading=0,toastTimer;function toast(t){const el=document.querySelector('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2300)}
+function toggleCar(){if(!missionStarted)return;if(!inCar&&player.position.distanceTo(car.position)<4){inCar=true;player.visible=false;toast('VEÍCULO PRONTO · EXPLORA A CIDADE')}else if(inCar){inCar=false;player.visible=true;player.position.copy(car.position);player.position.x+=2.2;carSpeed=0}}
+function resetPosition(){if(inCar){car.position.set(10,0,8);car.rotation.y=0;carSpeed=0}else player.position.set(0,0,0);toast('POSIÇÃO REINICIADA')}
+function updateObjective(){const o=document.querySelector('#objective');if(!missionStarted)o.textContent='Encontra o carro assinalado';else if(checkpointIndex<0)o.textContent='Entra no carro (E)';else if(checkpointIndex<3)o.textContent='Visita o ponto '+(checkpointIndex+1)+' de 3';else o.textContent='Missão concluída!'}
+function start(){document.querySelector('#start').style.opacity=0;setTimeout(()=>document.querySelector('#start').style.display='none',700);missionStarted=true;updateObjective();toast('BEM-VINDO A VICE CITY')}
+document.querySelector('#play').onclick=start;document.querySelector('#again').onclick=()=>document.querySelector('#complete').style.display='none';
+const map=document.querySelector('#map'),ctx=map.getContext('2d');
+function drawMap(){ctx.clearRect(0,0,300,300);ctx.fillStyle='#162b35';ctx.fillRect(0,0,300,300);ctx.fillStyle='#59656a';for(let i=0;i<9;i++){ctx.fillRect(i*36-3,0,12,300);ctx.fillRect(0,i*36-3,300,12)}ctx.fillStyle='#388d99';ctx.fillRect(0,0,300,35);ctx.fillStyle='#e5c18c';ctx.fillRect(0,35,300,8);ctx.fillStyle='#ffbd72';checkpoints.forEach((p,i)=>{if(i>=checkpointIndex+1){ctx.beginPath();ctx.arc(150+p.x*.8,150+p.z*.8,5,0,Math.PI*2);ctx.fill()}});let p=inCar?car.position:player.position;ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(150+p.x*.8,150+p.z*.8,5,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke()}
+let last=performance.now();function animate(now){requestAnimationFrame(animate);let dt=Math.min((now-last)/1000,.04);last=now;
+const target=inCar?car:player;let forward=0,turn=0;if(keys.w)forward+=1;if(keys.s)forward-=1;if(keys.a)turn+=1;if(keys.d)turn-=1;
+if(inCar){carSpeed+=forward*dt*18;carSpeed*=Math.pow(.975,dt*60);carSpeed=THREE.MathUtils.clamp(carSpeed,-10,25);car.rotation.y+=turn*dt*(1.4+Math.abs(carSpeed)*.045)*(carSpeed<0?-1:1);car.position.x+=Math.sin(car.rotation.y)*carSpeed*dt;car.position.z+=Math.cos(car.rotation.y)*carSpeed*dt;car.position.x=THREE.MathUtils.clamp(car.position.x,-105,105);car.position.z=THREE.MathUtils.clamp(car.position.z,-112,105);document.querySelector('#speed').innerHTML=Math.round(Math.abs(carSpeed)*5)+' <small style="display:inline;font-size:9px">KM/H</small>'}
+else{let move=forward*(keys.shift?10:6)*dt;heading+=turn*dt*2.5;player.rotation.y=heading;player.position.x+=Math.sin(heading)*move;player.position.z+=Math.cos(heading)*move;player.position.x=THREE.MathUtils.clamp(player.position.x,-105,105);player.position.z=THREE.MathUtils.clamp(player.position.z,-112,105)}
+rings.forEach((r,i)=>{r.rotation.z+=dt*.65;r.visible=missionStarted&&inCar&&i===checkpointIndex+1&&!missionDone});if(missionStarted&&inCar&&checkpointIndex<3){if(car.position.distanceTo(checkpoints[checkpointIndex+1])<5){checkpointIndex++;document.querySelector('#money').textContent='€ '+(250+checkpointIndex*150);updateObjective();toast(checkpointIndex===3?'MISSÃO CONCLUÍDA · +€500':'PONTO DESCOBERTO · +€150');if(checkpointIndex===3){missionDone=true;document.querySelector('#money').textContent='€ 750';document.querySelector('#complete').style.display='grid'}}}
+let desired=new THREE.Vector3(target.position.x+Math.sin(target.rotation.y)*-9,7.5,target.position.z+Math.cos(target.rotation.y)*-9);camera.position.lerp(desired,1-Math.pow(.001,dt));camera.lookAt(target.position.x,1.2,target.position.z);
+drawMap();renderer.render(scene,camera)}
+requestAnimationFrame(animate);
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2))});
+</script>
+</body></html>
