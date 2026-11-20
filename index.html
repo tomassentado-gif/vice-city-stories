@@ -64,8 +64,8 @@ const campusRoadCuts=[{minX:-146,maxX:-94,minZ:49,maxZ:101},{minX:-116,maxX:-64,
 function roadIntervals(a,b,c,d){const out=[];if(c>a)out.push([a,Math.min(c,b)]);if(d<b)out.push([Math.max(d,a),b]);return out.filter(p=>p[1]-p[0]>1)}
 function addHorizontalRoad(z,a,b){box(roadGroup,(a+b)/2,-.09,z,b-a,.18,14,asphalt,false);box(roadGroup,(a+b)/2,.012,z,b-a,.025,.16,yellow,false);for(let x=Math.ceil(a/10)*10;x<b;x+=10){box(roadGroup,x,.014,z-3.5,4,.025,.13,white,false);box(roadGroup,x,.014,z+3.5,4,.025,.13,white,false)}}
 function addVerticalRoad(x,a,b){box(roadGroup,x,-.09,(a+b)/2,14,.18,b-a,asphalt,false);box(roadGroup,x,.012,(a+b)/2,.16,.025,b-a,yellow,false);for(let z=Math.ceil(a/10)*10;z<b;z+=10){box(roadGroup,x-3.5,.014,z,.13,.025,4,white,false);box(roadGroup,x+3.5,.014,z,.13,.025,4,white,false)}}
-for(const z of roadLines){let parts=[[-170,170]];for(const c of campusRoadCuts)if(z>=c.minZ-7&&z<=c.maxZ+7)parts=parts.flatMap(([a,b])=>roadIntervals(a,b,c.minX-7,c.maxX+7));for(const [a,b] of parts)addHorizontalRoad(z,a,b)}
-for(const x of roadLines){let parts=[[-170,170]];for(const c of campusRoadCuts)if(x>=c.minX-7&&x<=c.maxX+7)parts=parts.flatMap(([a,b])=>roadIntervals(a,b,c.minZ-7,c.maxZ+7));for(const [a,b] of parts)addVerticalRoad(x,a,b)}
+for(const z of roadLines){let parts=[[-170,170]];for(const c of campusRoadCuts)if(z>=c.minZ-12&&z<=c.maxZ+12)parts=parts.flatMap(([a,b])=>roadIntervals(a,b,c.minX-11,c.maxX+11));for(const [a,b] of parts)addHorizontalRoad(z,a,b)}
+for(const x of roadLines){let parts=[[-170,170]];for(const c of campusRoadCuts)if(x>=c.minX-11&&x<=c.maxX+11)parts=parts.flatMap(([a,b])=>roadIntervals(a,b,c.minZ-12,c.maxZ+12));for(const [a,b] of parts)addVerticalRoad(x,a,b)}
 // Pavements and properly aligned city blocks: buildings sit BETWEEN roads, never on road surfaces.
 const buildingColliders=[];
 let seed=27;function rand(){seed=(seed*9301+49297)%233280;return seed/233280}
@@ -215,8 +215,8 @@ function getRoadRoute(from,to){
  const edgeBlocked=(x,z,nx,nz)=>{
   const ax=roadLines[x],az=roadLines[z],bx=roadLines[nx],bz=roadLines[nz];
   return campusRoadCuts.some(c=>{
-   if(az===bz)return az>=c.minZ-7&&az<=c.maxZ+7&&Math.max(Math.min(ax,bx),c.minX-7)<Math.min(Math.max(ax,bx),c.maxX+7);
-   return ax>=c.minX-7&&ax<=c.maxX+7&&Math.max(Math.min(az,bz),c.minZ-7)<Math.min(Math.max(az,bz),c.maxZ+7);
+   if(az===bz)return az>=c.minZ-12&&az<=c.maxZ+12&&Math.max(Math.min(ax,bx),c.minX-11)<Math.min(Math.max(ax,bx),c.maxX+11);
+   return ax>=c.minX-11&&ax<=c.maxX+11&&Math.max(Math.min(az,bz),c.minZ-12)<Math.min(Math.max(az,bz),c.maxZ+12);
   });
  };
  let found=false;
