@@ -46,7 +46,7 @@
 <div id="locations"><h3>LOCAIS IMPORTANTES</h3><p>🏠 <b>APARTAMENTO</b><small>East Bay · coordenadas 135, 123 · tecla H à entrada</small></p><p>🚗 <b>GARAGEM</b><small>Sunset District · coordenadas 15, 23 · tecla G nas proximidades</small></p><small>L para fechar · M para ampliar o mapa</small></div>
 <div id="controls"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> MOVER / CONDUZIR<br><kbd>SHIFT</kbd> CORRER &nbsp; <kbd>E</kbd> ENTRAR / SAIR<br><kbd>R</kbd> REPOSICIONAR &nbsp; <kbd>F</kbd> MISSÃO<br><kbd>V</kbd> CÂMARA &nbsp; <kbd>M</kbd> MAPA &nbsp; <kbd>P</kbd> TELEMÓVEL &nbsp; <kbd>N</kbd> DIA/NOITE &nbsp; <kbd>G</kbd> GARAGEM &nbsp; <kbd>C</kbd> PINTURA<br><kbd>H</kbd> APARTAMENTO &nbsp; <kbd>J</kbd> TRABALHO EXTRA<br><kbd>K</kbd> GUARDAR VEÍCULO NA GARAGEM &nbsp; <kbd>L</kbd> LOCAIS</div>
 <div id="toast"></div>
-<div id="start"><div class="startbox"><div class="pretitle">UMA CIDADE. MIL HISTÓRIAS.</div><h1>VICE CITY<br><span>STORIES</span></h1><p>Explora uma cidade costeira inspirada nos anos 80. Conduz, descobre novos locais e percorre uma cidade construída para explorar.</p><button id="play">ENTRAR NA CIDADE&nbsp; →</button><p class="foot">VERSÃO 10.0 · VISUAL OVERHAUL</p></div></div>
+<div id="start"><div class="startbox"><div class="pretitle">UMA CIDADE. MIL HISTÓRIAS.</div><h1>VICE CITY<br><span>STORIES</span></h1><p>Explora uma cidade costeira inspirada nos anos 80. Conduz, descobre novos locais e percorre uma cidade construída para explorar.</p><button id="play">ENTRAR NA CIDADE&nbsp; →</button><p class="foot">VERSÃO 10.1 · REALISTIC MATERIALS</p></div></div>
 <div id="complete"><div class="panel"><div class="eyebrow">Missão concluída</div><h2>JÁ ÉS DA CIDADE.</h2><p>Visitaste os três locais principais de Sunset District.</p><h2 style="color:#ffb35c">+ € 450</h2><button id="again">CONTINUAR A EXPLORAR</button></div></div>
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
@@ -90,9 +90,20 @@ for(let ix=-5;ix<=4;ix++)for(let iz=-5;iz<=4;iz++){
  box(scene,bx,h/2,bz,w,h,d,bm);
  box(scene,bx,h+.18,bz,w*.78,.36,d*.78,mat(0x737b7b));
  for(let yy=2.4;yy<h-1;yy+=2.8)for(let xx=-w/2+1;xx<w/2-.4;xx+=1.8){
-  box(scene,bx+xx,yy,bz+d/2+.025,1,.95,.06,glass,false);
-  box(scene,bx+xx,yy,bz-d/2-.025,1,.95,.06,glass,false);
+  box(scene,bx+xx,yy,bz+d/2+.025,1,.95,.06,glass,false);box(scene,bx+xx,yy,bz-d/2-.025,1,.95,.06,glass,false);
+  box(scene,bx+xx,yy-.53,bz+d/2+.07,1.12,.07,.13,mat(0x858b89),false);
+  box(scene,bx+xx,yy+.51,bz+d/2+.065,1.08,.055,.1,mat(0xe5ded0),false);
  }
+ const trim=mat(0xeee2cf,.72),shadowTrim=mat(0x777f80,.82);
+ for(const side of [-1,1]){
+  box(scene,bx-w/2+.18,h/2,bz+side*(d/2+.07),.16,h,.16,trim,false);
+  box(scene,bx+w/2-.18,h/2,bz+side*(d/2+.07),.16,h,.16,trim,false);
+  box(scene,bx,h-.12,bz+side*(d/2+.09),w+.25,.2,.2,trim,false);
+ }
+ box(scene,bx,h+.42,bz,w*.84,.12,d*.84,shadowTrim,false);
+ box(scene,bx,1.05,bz+d/2+.08,1.35,2.1,.12,mat(0x655b50),false);
+ box(scene,bx,2.2,bz+d/2+.16,1.65,.12,.18,trim,false);
+ if(rand()>.42)for(const side of [-1,1])box(scene,bx+w*.28,.95,bz+side*(d/2+.22),.72,.34,.34,mat(0x9da7a6),false);
  buildingColliders.push({minX:bx-w/2-.25,maxX:bx+w/2+.25,minZ:bz-d/2-.25,maxZ:bz+d/2+.25});
 }
 // V7.0 — concessionário/garagem no quarteirão central livre.
@@ -237,7 +248,24 @@ function toggleHome(){
 
 // Player character.
 const player=new THREE.Group();scene.add(player);box(player,0,1.05,0,.75,1.05,.42,blue);const head=new THREE.Mesh(new THREE.SphereGeometry(.3,16,12),mat(0xc98f6a));head.position.y=1.88;player.add(head);const hair=new THREE.Mesh(new THREE.SphereGeometry(.31,12,8),dark);hair.scale.y=.45;hair.position.set(0,2.08,0);player.add(hair);box(player,-.2,.32,0,.23,.64,.28,dark);box(player,.2,.32,0,.23,.64,.28,dark);player.position.set(0,0,0);
-function makeCar(color=0xe8a64f){const g=new THREE.Group();box(g,0,.55,0,2.2,.65,4.2,mat(color,.35,.3));box(g,0,1.05,-.15,1.8,.7,2.15,glass);box(g,0,.26,1.95,1.9,.18,.12,white,false);for(const x of [-1,1])for(const z of [-1.35,1.35]){const w=new THREE.Mesh(new THREE.CylinderGeometry(.37,.37,.2,16),dark);w.rotation.z=Math.PI/2;w.position.set(x*1.08,.38,z);g.add(w)}for(const x of [-.72,.72]){box(g,x,.65,2.12,.25,.18,.08,white,false);box(g,x,.65,-2.12,.25,.18,.08,pink,false)}return g}
+// V10.1 — carroçaria detalhada, cromados, grelha, faróis e jantes.
+const chrome=mat(0xb7c2c5,.24,.82),rubber=mat(0x171b1e,.94),rim=mat(0xc4c9c8,.28,.72);
+const headlamp=new THREE.MeshStandardMaterial({color:0xfff1cf,emissive:0xffd58a,emissiveIntensity:.32,roughness:.22});
+function makeCar(color=0xe8a64f){
+ const g=new THREE.Group(),body=mat(color,.31,.38);
+ box(g,0,.55,0,2.2,.65,4.2,body);box(g,0,1.05,-.15,1.8,.7,2.15,new THREE.MeshPhysicalMaterial({color:0x35515d,roughness:.16,metalness:.28,transparent:true,opacity:.88,clearcoat:.9,clearcoatRoughness:.12}));
+ box(g,0,1.08,1.0,1.66,.56,.035,glass,false);box(g,0,1.08,-1.27,1.66,.56,.035,glass,false);
+ for(const x of [-.91,.91]){box(g,x,1.05,-.15,.045,.66,2.12,chrome,false);box(g,x,.68,-.15,.035,.08,2.45,chrome,false);box(g,x,.76,1.05,.2,.12,.22,chrome,false)}
+ box(g,0,.29,2.12,2.08,.16,.16,chrome,false);box(g,0,.53,2.115,.9,.22,.045,dark,false);box(g,0,.31,-2.12,2.08,.16,.16,chrome,false);
+ for(const x of [-.78,.78]){box(g,x,.67,2.13,.34,.2,.07,headlamp,false);box(g,x,.65,-2.13,.3,.18,.07,pink,false);box(g,x,.43,2.14,.28,.06,.045,chrome,false)}
+ for(const x of [-1,1])for(const z of [-1.35,1.35]){
+  const w=new THREE.Mesh(new THREE.CylinderGeometry(.38,.38,.22,20),rubber);w.rotation.z=Math.PI/2;w.position.set(x*1.08,.38,z);g.add(w);
+  const hub=new THREE.Mesh(new THREE.CylinderGeometry(.22,.22,.235,16),rim);hub.rotation.z=Math.PI/2;hub.position.set(x*1.08,.38,z);g.add(hub);
+  const cap=new THREE.Mesh(new THREE.CylinderGeometry(.075,.075,.245,12),chrome);cap.rotation.z=Math.PI/2;cap.position.set(x*1.08,.38,z);g.add(cap);
+ }
+ for(const x of [-1.115,1.115]){box(g,x,.43,0,.035,.09,2.35,chrome,false);box(g,x,.77,-.25,.045,.045,.24,chrome,false)}
+ return g
+}
 const car=makeCar();car.position.set(5,0,5);scene.add(car);const cars=[car];
 // Criar a frota da garagem só depois de inicializar o array cars.
 addGarageVehicle(0xd6d0bd,'classic',8);
