@@ -158,7 +158,7 @@ function start(){document.querySelector('#start').style.opacity=0;setTimeout(()=
 function startMission(){if(!missionStarted){missionStarted=true;updateObjective();toast('MISSÃO ACEITE: '+missions[0].title);return;}if(missionDone){toast('JÁ CONCLUÍSTE OS TRABALHOS INICIAIS');return;}toast('MISSÃO ATIVA: '+missions[checkpointIndex].target)}
 document.querySelector('#play').onclick=start;document.querySelector('#again').onclick=()=>document.querySelector('#complete').style.display='none';
 function overlapsBuilding(x,z,r=1.2){return buildingColliders.some(b=>x+r>b.minX&&x-r<b.maxX&&z+r>b.minZ&&z-r<b.maxZ)}
-function collides(x,z,r=1.2){if(x<-166||x>166||z<-166||z>166)return true;return overlapsBuilding(x,z,r)}
+function collides(x,z,r=1.2){if(x<-166||x>166||z<-210||z>166)return true;return overlapsBuilding(x,z,r)}
 function carHitsBuilding(x,z,yaw){
  const halfWidth=1.12,halfLength=2.12,fx=Math.sin(yaw),fz=Math.cos(yaw),rx=Math.cos(yaw),rz=-Math.sin(yaw);
  for(const b of buildingColliders){
