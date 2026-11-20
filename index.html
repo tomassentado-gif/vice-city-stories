@@ -117,22 +117,22 @@ addGarageVehicle(0xd6d0bd,'classic',8);
 addGarageVehicle(0xc64f48,'sport',15);
 addGarageVehicle(0xe6c34d,'taxi',22);
 addGarageVehicle(0x5b8c9e,'van',23);
-let garagePaintIndex=0;
+let garageVehicleIndex=0,garagePaintIndex=0;
 const paintColors=[0xe8a64f,0x4f91a8,0xc64f48,0xe6c34d,0x4d665b,0xe8e3d7,0x292f38,0x8b6c9e];
 function nearGarage(){const p=inCar?activeCar.position:player.position;return Math.hypot(p.x-15,p.z-23)<19}
 function useGarage(){
  if(!gameStarted)return;
  if(!nearGarage()){toast('APROXIMA-TE À GARAGEM');return}
  if(inCar){toast('SAI DO VEÍCULO PARA USAR A GARAGEM');return}
- garagePaintIndex=(garagePaintIndex+1)%garageFleet.length;
- const selected=garageFleet[garagePaintIndex];
+ garageVehicleIndex=(garageVehicleIndex+1)%garageFleet.length;
+ const selected=garageFleet[garageVehicleIndex];
  player.position.set(selected.position.x,0,selected.position.z+4.2);
  activeCar=selected;carSpeed=0;
  toast('GARAGEM · '+selected.userData.vehicleStyle.toUpperCase()+' · USA E PARA ENTRAR');
 }
 function paintVehicle(){
  if(!nearGarage()||inCar){toast('PERSONALIZAÇÃO DISPONÍVEL NA GARAGEM, A PÉ');return}
- if(!activeCar||!garageFleet.includes(activeCar)){activeCar=garageFleet[garagePaintIndex]}
+ if(!activeCar||!garageFleet.includes(activeCar)){activeCar=garageFleet[garageVehicleIndex]}
  garagePaintIndex=(garagePaintIndex+1)%paintColors.length;
  const body=activeCar.children[0];if(body&&body.material&&body.material.color)body.material.color.setHex(paintColors[garagePaintIndex]);
  toast('NOVA PINTURA APLICADA');
