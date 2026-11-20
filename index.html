@@ -303,7 +303,7 @@ function toggleCamera(){cameraMode=cameraMode==='third'?'first':'third';toast(ca
 function toggleMap(){mapExpanded=!mapExpanded;document.querySelector('#mapwrap').classList.toggle('expanded',mapExpanded);toast(mapExpanded?'MAPA DA CIDADE':'MINIMAPA')}
 function togglePhone(){phoneOpen=!phoneOpen;document.querySelector('#phone').classList.toggle('open',phoneOpen)}
 function start(){if(gameStarted)return;gameStarted=true;const overlay=document.querySelector('#start');overlay.style.opacity=0;overlay.style.pointerEvents='none';setTimeout(()=>overlay.style.display='none',700);toast('BEM-VINDO A VICE CITY');updateObjective()}
-let sideJobActive=false;const sideJobPoint=new THREE.Vector3(105,0,45);const sideJobRing=new THREE.Mesh(new THREE.TorusGeometry(2.2,.2,8,28),mat(0x8ed1df));sideJobRing.rotation.x=Math.PI/2;sideJobRing.position.set(sideJobPoint.x,1.4,sideJobPoint.z);scene.add(sideJobRing);sideJobRing.visible=false;
+let sideJobActive=false;const sideJobPoint=new THREE.Vector3(120,0,60);const sideJobRing=new THREE.Mesh(new THREE.TorusGeometry(2.2,.2,8,28),mat(0x8ed1df));sideJobRing.rotation.x=Math.PI/2;sideJobRing.position.set(sideJobPoint.x,1.4,sideJobPoint.z);scene.add(sideJobRing);sideJobRing.visible=false;
 function startSideJob(){if(sideJobActive){toast('ENTREGA EM CURSO · SEGUE O MARCADOR AZUL');return}sideJobActive=true;sideJobRing.visible=true;toast('TRABALHO EXTRA · ENTREGA NO EAST BAY · +€150')}
 function saveVehicle(){if(!nearGarage()||inCar){toast('GUARDA O VEÍCULO NA GARAGEM, A PÉ');return}try{const data={x:activeCar.position.x,z:activeCar.position.z,yaw:activeCar.rotation.y,style:activeCar.userData.vehicleStyle||'classic'};localStorage.setItem('viceCitySavedVehicle',JSON.stringify(data));toast('VEÍCULO GUARDADO NA GARAGEM')}catch(e){toast('NÃO FOI POSSÍVEL GUARDAR O VEÍCULO')}}
 function loadSavedVehicle(){try{const raw=localStorage.getItem('viceCitySavedVehicle');if(!raw)return;const data=JSON.parse(raw);if(!Number.isFinite(data.x)||!Number.isFinite(data.z)||Math.abs(data.x)>160||Math.abs(data.z)>160)return;const v=garageFleet.find(c=>c.userData.vehicleStyle===data.style)||garageFleet[0];v.position.set(data.x,0,data.z);v.rotation.y=Number.isFinite(data.yaw)?data.yaw:Math.PI;activeCar=v}catch(e){}}
@@ -385,10 +385,11 @@ if(inCar){
  document.querySelector('#speed').textContent=String(Math.round(Math.abs(carSpeed)*5)).padStart(3,'0');document.querySelector('#gear').textContent=carSpeed>1?'D':carSpeed< -1?'R':'N';document.querySelector('#vehicle-hud').style.display='flex';document.querySelector('#player-state').textContent='A CONDUZIR'
 }
 else{const move=forward*(keys.shift?9:5.5)*dt;heading+=turn*dt*2.4;player.rotation.y=heading;const nx=player.position.x+Math.sin(heading)*move,nz=player.position.z+Math.cos(heading)*move;if(insideHome){player.position.x=THREE.MathUtils.clamp(nx,127,143);player.position.z=THREE.MathUtils.clamp(nz,128,142)}else{if(!collides(nx,player.position.z,.65))player.position.x=nx;if(!collides(player.position.x,nz,.65))player.position.z=nz}document.querySelector('#speed').textContent='000';document.querySelector('#gear').textContent='N';document.querySelector('#vehicle-hud').style.display='none';document.querySelector('#player-state').textContent='A PÉ'}
-rings.forEach((r,i)=>{r.rotation.z+=dt*.65;r.visible=missionStarted&&!missionDone&&i===checkpointIndex});
+const actor=inCar?activeCar:player;
+ rings.forEach((r,i)=>{r.rotation.z+=dt*.65;r.visible=missionStarted&&!missionDone&&i===checkpointIndex});
  sideJobRing.rotation.z+=dt*.7;sideJobRing.visible=sideJobActive;
  if(sideJobActive&&!insideHome&&actor.position.distanceTo(sideJobPoint)<8){sideJobActive=false;sideJobRing.visible=false;const current=Number((document.querySelector('#money').textContent.match(/[0-9]+/)||['250'])[0]);document.querySelector('#money').textContent='€ '+(current+150);toast('ENTREGA EXTRA CONCLUÍDA · +€150')}
-const actor=inCar?activeCar:player;if(missionStarted&&!missionDone&&checkpointIndex<missions.length&&actor.position.distanceTo(checkpoints[checkpointIndex])<9){
+if(missionStarted&&!missionDone&&checkpointIndex<missions.length&&actor.position.distanceTo(checkpoints[checkpointIndex])<9){
  const reward=missions[checkpointIndex].reward;const total=250+missions.slice(0,checkpointIndex+1).reduce((sum,m)=>sum+m.reward,0);
  checkpointIndex++;document.querySelector('#money').textContent='€ '+total;updateObjective();
  toast('MISSÃO CONCLUÍDA · +€'+reward);
