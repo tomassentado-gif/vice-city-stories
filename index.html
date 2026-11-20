@@ -206,6 +206,30 @@ function moveCar(dx,dz){
 }
 function resetPosition(){activeCar.position.set(5,0,5);activeCar.rotation.y=0;carSpeed=0;if(inCar)toast('VEÍCULO REPOSICIONADO');else toast('VEÍCULO DEVOLVIDO À PRAÇA')}
 const map=document.querySelector('#map'),ctx=map.getContext('2d');
+// Navegação por interseções: o GPS usa a malha real de ruas e evita os terrenos fechados.
+function getRoadRoute(from,to){
+ const nearest=p=>Math.max(0,Math.min(roadLines.length-1,Math.round((p+150)/30)));
+ const sx=nearest(from.x),sz=nearest(from.z),tx=nearest(to.x),tz=nearest(to.z);
+ const key=(x,z)=>x+','+z,queue=[[sx,sz]],prev=new Map([[key(sx,sz),null]]);
+ const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
+ const edgeBlocked=(x,z,nx,nz)=>{
+  const ax=roadLines[x],az=roadLines[z],bx=roadLines[nx],bz=roadLines[nz];
+  return campusRoadCuts.some(c=>{
+   if(az===bz)return az>=c.minZ-7&&az<=c.maxZ+7&&Math.max(Math.min(ax,bx),c.minX-7)<Math.min(Math.max(ax,bx),c.maxX+7);
+   return ax>=c.minX-7&&ax<=c.maxX+7&&Math.max(Math.min(az,bz),c.minZ-7)<Math.min(Math.max(az,bz),c.maxZ+7);
+  });
+ };
+ let found=false;
+ while(queue.length){const [x,z]=queue.shift();if(x===tx&&z===tz){found=true;break}
+  for(const [dx,dz] of dirs){const nx=x+dx,nz=z+dz,k=key(nx,nz);if(nx<0||nx>=roadLines.length||nz<0||nz>=roadLines.length||prev.has(k)||edgeBlocked(x,z,nx,nz))continue;prev.set(k,key(x,z));queue.push([nx,nz])}
+ }
+ const points=[new THREE.Vector3(from.x,.12,from.z)];
+ if(found){let k=key(tx,tz),nodes=[];while(k){const [x,z]=k.split(',').map(Number);nodes.push(new THREE.Vector3(roadLines[x],.12,roadLines[z]));k=prev.get(k)}nodes.reverse();points.push(...nodes)}
+ else points.push(new THREE.Vector3(roadLines[sx],.12,roadLines[sz]),new THREE.Vector3(roadLines[tx],.12,roadLines[tz]));
+ points.push(new THREE.Vector3(to.x,.12,to.z));
+ return points.filter((p,i,a)=>i===0||p.distanceTo(a[i-1])>.5);
+}
+function routeLength(points){let d=0;for(let i=1;i<points.length;i++)d+=points[i].distanceTo(points[i-1]);return Math.round(d)}
 function drawMap(){
  ctx.clearRect(0,0,300,300);ctx.fillStyle='#1b3038';ctx.fillRect(0,0,300,300);
  ctx.fillStyle='#56636a';for(let n=-5;n<=5;n++){const p=150+n*30*.78;ctx.fillRect(p-4,0,8,300);ctx.fillRect(0,p-4,300,8)}
@@ -217,7 +241,7 @@ function drawMap(){
  // Direction arrow: points in the exact direction the player/car is facing.
  // Draw the arrow from the actor's actual forward vector (+Z rotated by yaw).
  const fx=Math.sin(yaw),fy=Math.cos(yaw),px=fy,py=-fx;
- if(missionStarted&&!missionDone){const dest=missions[checkpointIndex].point;ctx.strokeStyle='rgba(255,190,112,.85)';ctx.lineWidth=2;ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(mx,my);ctx.lineTo(150+dest.x*.78,150+dest.z*.78);ctx.stroke();ctx.setLineDash([])}
+ if(missionStarted&&!missionDone){const dest=missions[checkpointIndex].point,route=getRoadRoute(p,dest);ctx.strokeStyle='rgba(255,190,112,.95)';ctx.lineWidth=2.5;ctx.setLineDash([5,3]);ctx.beginPath();route.forEach((q,i)=>{const qx=150+q.x*.78,qy=150+q.z*.78;if(i===0)ctx.moveTo(qx,qy);else ctx.lineTo(qx,qy)});ctx.stroke();ctx.setLineDash([])}
  ctx.fillStyle='#fff';ctx.strokeStyle='#0b1720';ctx.lineWidth=2;
  ctx.beginPath();ctx.moveTo(mx+fx*12,my+fy*12);ctx.lineTo(mx-fx*8+px*6,my-fy*8+py*6);ctx.lineTo(mx-fx*4,my-fy*4);ctx.lineTo(mx-fx*8-px*6,my-fy*8-py*6);ctx.closePath();ctx.fill();ctx.stroke();
 }
@@ -241,7 +265,7 @@ const actor=inCar?activeCar:player;if(missionStarted&&!missionDone&&checkpointIn
  else toast('MISSÃO CONCLUÍDA · +€'+reward+' | PRÓXIMA: '+missions[checkpointIndex].title);
 }
 if(cameraMode==='first'){const eyeY=inCar?1.35:1.68;const eyeOffset=inCar?.45:0;const eye=new THREE.Vector3(actor.position.x+Math.sin(actor.rotation.y)*eyeOffset,eyeY,actor.position.z+Math.cos(actor.rotation.y)*eyeOffset);const look=new THREE.Vector3(actor.position.x+Math.sin(actor.rotation.y)*24,eyeY,actor.position.z+Math.cos(actor.rotation.y)*24);camera.position.lerp(eye,1-Math.pow(.00001,dt));camera.lookAt(look)}else{const desired=new THREE.Vector3(actor.position.x+Math.sin(actor.rotation.y)*-11,8,actor.position.z+Math.cos(actor.rotation.y)*-11);camera.position.lerp(desired,1-Math.pow(.001,dt));camera.lookAt(actor.position.x,1.2,actor.position.z)}
-const target=missionStarted&&!missionDone?missions[checkpointIndex].point:null;const dist=target?Math.round(actor.position.distanceTo(target)):0;document.querySelector('#gps-distance').textContent=target?dist+' M · '+missions[checkpointIndex].target.toUpperCase():'SEM DESTINO';
+const target=missionStarted&&!missionDone?missions[checkpointIndex].point:null;const dist=target?routeLength(getRoadRoute(actor.position,target)):0;document.querySelector('#gps-distance').textContent=target?dist+' M · '+missions[checkpointIndex].target.toUpperCase():'SEM DESTINO';
 const staminaPct=Math.round(stamina);document.querySelector('#stamina-bar').style.width=staminaPct+'%';document.querySelector('#stamina-value').textContent=staminaPct;document.querySelector('#health-bar').style.width=health+'%';document.querySelector('#health-value').textContent=health;document.querySelector('#armor-bar').style.width=armor+'%';document.querySelector('#armor-value').textContent=armor;
 const area=actor.position.z < -120?'OCEANFRONT':actor.position.x < -60?'WESTSIDE':actor.position.x > 60?'EAST BAY':actor.position.z > 60?'SOUTH DOWNTOWN':'SUNSET DISTRICT';document.querySelector('#map-area').textContent=area;document.querySelector('#district').textContent=area+' · VICE CITY · 1986';drawMap();renderer.render(scene,camera)}
 requestAnimationFrame(animate);
