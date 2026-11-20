@@ -46,16 +46,19 @@
 <div id="locations"><h3>LOCAIS IMPORTANTES</h3><p>🏠 <b>APARTAMENTO</b><small>East Bay · coordenadas 135, 123 · tecla H à entrada</small></p><p>🚗 <b>GARAGEM</b><small>Sunset District · coordenadas 15, 23 · tecla G nas proximidades</small></p><small>L para fechar · M para ampliar o mapa</small></div>
 <div id="controls"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> MOVER / CONDUZIR<br><kbd>SHIFT</kbd> CORRER &nbsp; <kbd>E</kbd> ENTRAR / SAIR<br><kbd>R</kbd> REPOSICIONAR &nbsp; <kbd>F</kbd> MISSÃO<br><kbd>V</kbd> CÂMARA &nbsp; <kbd>M</kbd> MAPA &nbsp; <kbd>P</kbd> TELEMÓVEL &nbsp; <kbd>N</kbd> DIA/NOITE &nbsp; <kbd>G</kbd> GARAGEM &nbsp; <kbd>C</kbd> PINTURA<br><kbd>H</kbd> APARTAMENTO &nbsp; <kbd>J</kbd> TRABALHO EXTRA<br><kbd>K</kbd> GUARDAR VEÍCULO NA GARAGEM &nbsp; <kbd>L</kbd> LOCAIS</div>
 <div id="toast"></div>
-<div id="start"><div class="startbox"><div class="pretitle">UMA CIDADE. MIL HISTÓRIAS.</div><h1>VICE CITY<br><span>STORIES</span></h1><p>Explora uma cidade costeira inspirada nos anos 80. Conduz, descobre novos locais e percorre uma cidade construída para explorar.</p><button id="play">ENTRAR NA CIDADE&nbsp; →</button><p class="foot">VERSÃO 9.0 · CITY GUIDE</p></div></div>
+<div id="start"><div class="startbox"><div class="pretitle">UMA CIDADE. MIL HISTÓRIAS.</div><h1>VICE CITY<br><span>STORIES</span></h1><p>Explora uma cidade costeira inspirada nos anos 80. Conduz, descobre novos locais e percorre uma cidade construída para explorar.</p><button id="play">ENTRAR NA CIDADE&nbsp; →</button><p class="foot">VERSÃO 10.0 · VISUAL OVERHAUL</p></div></div>
 <div id="complete"><div class="panel"><div class="eyebrow">Missão concluída</div><h2>JÁ ÉS DA CIDADE.</h2><p>Visitaste os três locais principais de Sunset District.</p><h2 style="color:#ffb35c">+ € 450</h2><button id="again">CONTINUAR A EXPLORAR</button></div></div>
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 const canvas=document.querySelector('#game');
-const renderer=new THREE.WebGLRenderer({canvas,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.12;
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x9aa99f);scene.fog=new THREE.FogExp2(0x9aa99f,.0018);
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.18;
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x9aa99f);scene.fog=new THREE.FogExp2(0x9aa99f,.00135);
+// V10.0 — céu atmosférico com gradiente, horizonte quente e brilho solar.
+const skyUniforms={sunDirection:{value:new THREE.Vector3(-.45,.72,.35).normalize()}};
+const sky=new THREE.Mesh(new THREE.SphereGeometry(490,32,18),new THREE.ShaderMaterial({uniforms:skyUniforms,vertexShader:'varying vec3 vDir; void main(){vDir=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',fragmentShader:'varying vec3 vDir; uniform vec3 sunDirection; void main(){float h=max(normalize(vDir).y,0.0);vec3 horizon=vec3(0.93,0.60,0.40);vec3 zenith=vec3(0.10,0.28,0.43);vec3 col=mix(horizon,zenith,pow(h,0.62));float sun=max(dot(normalize(vDir),normalize(sunDirection)),0.0);col+=vec3(1.0,0.50,0.20)*pow(sun,28.0)*0.65;gl_FragColor=vec4(col,1.0);}',side:THREE.BackSide,depthWrite:false,fog:false}));sky.renderOrder=-10;scene.add(sky);
 const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,.1,600);
-const hemi=new THREE.HemisphereLight(0xc5e6ff,0x45515a,2);scene.add(hemi);
-const sun=new THREE.DirectionalLight(0xffe0b0,3);sun.position.set(-45,75,35);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-130;sun.shadow.camera.right=130;sun.shadow.camera.top=130;sun.shadow.camera.bottom=-130;scene.add(sun);
+const hemi=new THREE.HemisphereLight(0xc5e6ff,0x45515a,1.8);scene.add(hemi);
+const sun=new THREE.DirectionalLight(0xffd3a1,3.2);sun.position.set(-45,75,35);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-130;sun.shadow.camera.right=130;sun.shadow.camera.top=130;sun.shadow.camera.bottom=-130;sun.shadow.bias=-.00018;sun.shadow.normalBias=.025;sun.shadow.radius=3;scene.add(sun);
 const mat=(c,r=.85,m=0)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m});
 const asphalt=mat(0x303a43),sidewalk=mat(0xa6a69a),sand=mat(0xc9ad83),white=mat(0xf2eee0),glass=new THREE.MeshStandardMaterial({color:0x78aebb,roughness:.25,metalness:.25}),palmMat=mat(0x526c4a),trunkMat=mat(0x806044),yellow=mat(0xffc15e),blue=mat(0x237f9d),dark=mat(0x17232d),pink=mat(0xd97e83),green=mat(0x477b65);
 const ground=new THREE.Mesh(new THREE.PlaneGeometry(600,600),mat(0x9caa91));ground.rotation.x=-Math.PI/2;ground.position.y=-.2;ground.receiveShadow=true;scene.add(ground);
@@ -137,7 +140,10 @@ function paintVehicle(){
  toast('NOVA PINTURA APLICADA');
 }
 // Coastal water and promenade, clear of the road grid.
-const sea=new THREE.Mesh(new THREE.PlaneGeometry(600,130),new THREE.MeshStandardMaterial({color:0x398caa,roughness:.28,metalness:.1}));sea.rotation.x=-Math.PI/2;sea.position.set(0,-.24,-225);scene.add(sea);
+// V10.0 — oceano animado com ondulação geométrica e brilho subtil.
+const waterUniforms={uTime:{value:0}};const waterMaterial=new THREE.MeshStandardMaterial({color:0x287e9b,roughness:.22,metalness:.18});
+waterMaterial.onBeforeCompile=shader=>{shader.uniforms.uTime=waterUniforms.uTime;shader.vertexShader='uniform float uTime;\\n'+shader.vertexShader;shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\\ntransformed.z += sin(position.x*0.055+uTime*0.8)*0.22 + cos(position.y*0.08+uTime*0.65)*0.13;');shader.fragmentShader='uniform float uTime;\\n'+shader.fragmentShader;shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\\nfloat shimmer=0.96+0.04*sin(vViewPosition.x*1.7+uTime*1.8)*sin(vViewPosition.y*2.2-uTime); diffuseColor.rgb*=shimmer;');};
+const sea=new THREE.Mesh(new THREE.PlaneGeometry(600,130,120,32),waterMaterial);sea.rotation.x=-Math.PI/2;sea.position.set(0,-.24,-225);sea.receiveShadow=true;scene.add(sea);
 box(scene,0,-.015,-158,340,.2,9,sand,false);
 function palm(x,z,s=1){const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);const t=new THREE.Mesh(new THREE.CylinderGeometry(.18*s,.3*s,5*s,7),trunkMat);t.position.y=2.5*s;t.castShadow=true;g.add(t);for(let k=0;k<7;k++){const a=k*Math.PI*2/7;const leaf=new THREE.Mesh(new THREE.BoxGeometry(.45*s,.12*s,3.7*s),palmMat);leaf.position.set(Math.sin(a)*1.5*s,5*s,Math.cos(a)*1.5*s);leaf.rotation.y=a;leaf.rotation.x=-.3;leaf.castShadow=true;g.add(leaf)}}
 for(let x=-150;x<=150;x+=14){palm(x,-150,.9);palm(x,-165,.75)}
@@ -277,9 +283,9 @@ function addTrafficSignal(x,z,orientation=0){
 }
 for(const [x,z] of [[-60,-60],[0,-60],[60,-60],[-60,0],[0,0],[60,0],[-60,60],[0,60],[60,60]])addTrafficSignal(x+5,z+5,(x+z)%120===0?0:Math.PI/2);
 let nightMode=false,cityClock=0;
-function toggleNight(){nightMode=!nightMode;scene.background.set(nightMode?0x101d32:0x9aa99f);scene.fog.color.set(nightMode?0x101d32:0x9aa99f);sun.intensity=nightMode?.38:3;hemi.intensity=nightMode?.42:2;renderer.toneMappingExposure=nightMode?.82:1.12;streetLamps.forEach(m=>m.emissiveIntensity=nightMode?1.8:0);lampLights.forEach(l=>l.intensity=nightMode?1.7:0);toast(nightMode?'NOITE EM VICE CITY':'DIA EM VICE CITY')}
+function toggleNight(){nightMode=!nightMode;scene.background.set(nightMode?0x101d32:0x9aa99f);scene.fog.color.set(nightMode?0x101d32:0x9aa99f);sky.visible=!nightMode;sun.intensity=nightMode?.38:3.2;hemi.intensity=nightMode?.42:1.8;renderer.toneMappingExposure=nightMode?.86:1.18;streetLamps.forEach(m=>m.emissiveIntensity=nightMode?1.8:0);lampLights.forEach(l=>l.intensity=nightMode?1.7:0);toast(nightMode?'NOITE EM VICE CITY':'DIA EM VICE CITY')}
 function updateLivingCity(dt){
- cityClock+=dt;
+ cityClock+=dt;waterUniforms.uTime.value=cityClock;
  for(const v of trafficCars){const p=v.mesh.position,delta=v.direction*v.speed*dt;if(v.axis==='x'){p.x+=delta;if(p.x>170)p.x=-170;if(p.x< -170)p.x=170}else{p.z+=delta;if(p.z>170)p.z=-170;if(p.z< -170)p.z=170}}
  for(const p of pedestrians){const pos=p.mesh.position;p.phase+=dt*p.speed*p.dir;const offset=Math.sin(p.phase)*p.range;if(p.axis==='x')pos.x=p.origin+offset;else pos.z=p.origin+offset;p.mesh.rotation.y=p.axis==='x'?(Math.cos(p.phase)*p.dir>0?Math.PI/2:-Math.PI/2):(Math.cos(p.phase)*p.dir>0?0:Math.PI)}
  const phase=(cityClock%18)/18;signals.forEach((lenses,i)=>{const t=(phase+i*.075)%1,active=t<.43?0:t<.5?1:2;lenses.forEach((m,j)=>m.emissiveIntensity=j===active?1.5:.08)});
@@ -406,6 +412,6 @@ const target=missionStarted&&!missionDone?missions[checkpointIndex].point:null;c
 const staminaPct=Math.round(stamina);document.querySelector('#stamina-bar').style.width=staminaPct+'%';document.querySelector('#stamina-value').textContent=staminaPct;document.querySelector('#health-bar').style.width=health+'%';document.querySelector('#health-value').textContent=health;document.querySelector('#armor-bar').style.width=armor+'%';document.querySelector('#armor-value').textContent=armor;
 const area=insideHome?'APARTAMENTO':actor.position.z < -120?'OCEANFRONT':actor.position.x < -60?'WESTSIDE':actor.position.x > 60?'EAST BAY':actor.position.z > 60?'SOUTH DOWNTOWN':'SUNSET DISTRICT';document.querySelector('#map-area').textContent=area;document.querySelector('#district').textContent=area+' · VICE CITY · 1986';drawMap();renderer.render(scene,camera)}
 requestAnimationFrame(animate);
-addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2))});
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.75))});
 </script>
 </body></html>
