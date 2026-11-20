@@ -87,7 +87,7 @@ const missions=[
 ];
 const checkpoints=missions.map(m=>m.point);
 const rings=[];checkpoints.forEach(p=>{const ring=new THREE.Mesh(new THREE.TorusGeometry(2.6,.23,8,32),yellow);ring.rotation.x=Math.PI/2;ring.position.set(p.x,1.5,p.z);scene.add(ring);const beam=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,4,8),new THREE.MeshBasicMaterial({color:0xffbb66,transparent:true,opacity:.28}));beam.position.set(p.x,2,p.z);scene.add(beam);rings.push(ring)});
-let checkpointIndex=0,missionStarted=false,missionDone=false,inCar=false,activeCar=car,carSpeed=0,heading=0,toastTimer;
+let checkpointIndex=0,gameStarted=false,missionStarted=false,missionDone=false,inCar=false,activeCar=car,carSpeed=0,heading=0,toastTimer;
 const keys={};addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(!keys[k]&&k==='f')startMission();keys[k]=true;if(['w','a','s','d',' '].includes(k))e.preventDefault();if(k==='e')toggleCar();if(k==='r')resetPosition()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
 function toast(t){const el=document.querySelector('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2300)}
 function updateObjective(){
@@ -97,17 +97,32 @@ function updateObjective(){
  else if(missionDone){document.querySelector('#missionType').textContent='CAMPANHA CONCLUÍDA';document.querySelector('#missionTitle').textContent='TRABALHO FEITO';document.querySelector('#missionDesc').textContent='Concluíste os primeiros trabalhos de Sunset District.';o.textContent='Explora a cidade livremente';}
  else{document.querySelector('#missionType').textContent='MISSÃO '+String(checkpointIndex+1).padStart(2,'0')+' / 03';document.querySelector('#missionTitle').textContent=m.title;document.querySelector('#missionDesc').textContent=m.desc;o.textContent='Dirige-te a: '+m.target;}
 }
-function toggleCar(){if(!missionStarted)return;if(!inCar){let nearest=null,dist=5.5;for(const c of cars){const d=player.position.distanceTo(c.position);if(d<dist){nearest=c;dist=d}}if(nearest){activeCar=nearest;inCar=true;player.visible=false;carSpeed=0;toast('ENTRASTE NO VEÍCULO');updateObjective()}else toast('APROXIMA-TE DE UM CARRO')}else{inCar=false;player.visible=true;const sideX=Math.cos(activeCar.rotation.y)*2.2,sideZ=-Math.sin(activeCar.rotation.y)*2.2;let ex=activeCar.position.x+sideX,ez=activeCar.position.z+sideZ;if(collides(ex,ez,.65)){ex=activeCar.position.x-sideX;ez=activeCar.position.z-sideZ;}player.position.set(ex,0,ez);heading=activeCar.rotation.y;player.rotation.y=heading;carSpeed=0;updateObjective()}}
-function start(){document.querySelector('#start').style.opacity=0;setTimeout(()=>document.querySelector('#start').style.display='none',700);toast('BEM-VINDO A VICE CITY');updateObjective()}
+function toggleCar(){if(!gameStarted)return;if(!inCar){let nearest=null,dist=5.5;for(const c of cars){const d=player.position.distanceTo(c.position);if(d<dist){nearest=c;dist=d}}if(nearest){activeCar=nearest;inCar=true;player.visible=false;carSpeed=0;toast('ENTRASTE NO VEÍCULO');updateObjective()}else toast('APROXIMA-TE DE UM CARRO')}else{inCar=false;player.visible=true;const sideX=Math.cos(activeCar.rotation.y)*2.2,sideZ=-Math.sin(activeCar.rotation.y)*2.2;let ex=activeCar.position.x+sideX,ez=activeCar.position.z+sideZ;if(collides(ex,ez,.65)){ex=activeCar.position.x-sideX;ez=activeCar.position.z-sideZ;}player.position.set(ex,0,ez);heading=activeCar.rotation.y;player.rotation.y=heading;carSpeed=0;updateObjective()}}
+function start(){document.querySelector('#start').style.opacity=0;setTimeout(()=>document.querySelector('#start').style.display='none',700);gameStarted=true;toast('BEM-VINDO A VICE CITY');updateObjective()}
 function startMission(){if(!missionStarted){missionStarted=true;updateObjective();toast('MISSÃO ACEITE: '+missions[0].title);return;}if(missionDone){toast('JÁ CONCLUÍSTE OS TRABALHOS INICIAIS');return;}toast('MISSÃO ATIVA: '+missions[checkpointIndex].target)}
 document.querySelector('#play').onclick=start;document.querySelector('#again').onclick=()=>document.querySelector('#complete').style.display='none';
 function overlapsBuilding(x,z,r=1.2){return buildingColliders.some(b=>x+r>b.minX&&x-r<b.maxX&&z+r>b.minZ&&z-r<b.maxZ)}
 function collides(x,z,r=1.2){if(x<-106||x>106||z<-112||z>106)return true;return overlapsBuilding(x,z,r)}
+function carHitsBuilding(x,z,yaw){
+ const halfWidth=1.12,halfLength=2.12,fx=Math.sin(yaw),fz=Math.cos(yaw),rx=Math.cos(yaw),rz=-Math.sin(yaw);
+ for(const b of buildingColliders){
+  const cx=(b.minX+b.maxX)/2,cz=(b.minZ+b.maxZ)/2,hx=(b.maxX-b.minX)/2,hz=(b.maxZ-b.minZ)/2,dx=x-cx,dz=z-cz;
+  const axes=[[1,0],[0,1],[rx,rz],[fx,fz]];
+  let separated=false;
+  for(const [ax,az] of axes){
+   const carRadius=halfWidth*Math.abs(rx*ax+rz*az)+halfLength*Math.abs(fx*ax+fz*az);
+   const blockRadius=hx*Math.abs(ax)+hz*Math.abs(az);
+   if(Math.abs(dx*ax+dz*az)>carRadius+blockRadius){separated=true;break;}
+  }
+  if(!separated)return true;
+ }
+ return false;
+}
 function moveCar(dx,dz){
- const nx=activeCar.position.x+dx,nz=activeCar.position.z+dz;
- // A smaller collision radius leaves enough clearance in narrow street-side gaps.
- if(!collides(nx,activeCar.position.z,1.18))activeCar.position.x=nx;else carSpeed=0;
- if(!collides(activeCar.position.x,nz,1.18))activeCar.position.z=nz;else carSpeed=0;
+ const nx=activeCar.position.x+dx,nz=activeCar.position.z+dz,yaw=activeCar.rotation.y;
+ if(nx<-106||nx>106||nz<-112||nz>106){carSpeed=0;return;}
+ if(!carHitsBuilding(nx,activeCar.position.z,yaw))activeCar.position.x=nx;else carSpeed=0;
+ if(!carHitsBuilding(activeCar.position.x,nz,yaw))activeCar.position.z=nz;else carSpeed=0;
 }
 function resetPosition(){activeCar.position.set(5,0,5);activeCar.rotation.y=0;carSpeed=0;if(inCar)toast('VEÍCULO REPOSICIONADO');else toast('VEÍCULO DEVOLVIDO À PRAÇA')}
 const map=document.querySelector('#map'),ctx=map.getContext('2d');
