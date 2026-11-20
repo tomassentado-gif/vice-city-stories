@@ -42,9 +42,9 @@
 <div id="phone-hint">[ P ] TELEMÓVEL</div><div id="phone"><div class="phone-top"><span>VICE MOBILE</span><span>●●● 4G</span></div><div class="phone-time">09:41</div><div class="phone-card"><small>MENSAGENS</small><b>Tommy — novo trabalho</b><p>Passa pelo Café Sunset. Tenho uma entrega para ti.</p></div><div class="phone-card"><small>CONTACTOS</small><b>Serviços da cidade</b><p>Sem chamadas recentes.</p></div><div class="phone-foot">P PARA FECHAR</div></div>
 <div id="gps-label"><span>GPS</span><b id="gps-distance">SEM DESTINO</b></div>
 <div id="mapwrap"><div id="map-title"><span>MAPA</span><b id="map-area">SUNSET DISTRICT</b></div><canvas id="map" width="300" height="300"></canvas></div>
-<div id="controls"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> MOVER / CONDUZIR<br><kbd>SHIFT</kbd> CORRER &nbsp; <kbd>E</kbd> ENTRAR / SAIR<br><kbd>R</kbd> REPOSICIONAR &nbsp; <kbd>F</kbd> MISSÃO<br><kbd>V</kbd> CÂMARA &nbsp; <kbd>M</kbd> MAPA &nbsp; <kbd>P</kbd> TELEMÓVEL</div>
+<div id="controls"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> MOVER / CONDUZIR<br><kbd>SHIFT</kbd> CORRER &nbsp; <kbd>E</kbd> ENTRAR / SAIR<br><kbd>R</kbd> REPOSICIONAR &nbsp; <kbd>F</kbd> MISSÃO<br><kbd>V</kbd> CÂMARA &nbsp; <kbd>M</kbd> MAPA &nbsp; <kbd>P</kbd> TELEMÓVEL &nbsp; <kbd>N</kbd> DIA/NOITE</div>
 <div id="toast"></div>
-<div id="start"><div class="startbox"><div class="pretitle">UMA CIDADE. MIL HISTÓRIAS.</div><h1>VICE CITY<br><span>STORIES</span></h1><p>Explora uma cidade costeira inspirada nos anos 80. Conduz, descobre novos locais e percorre uma cidade construída para explorar.</p><button id="play">ENTRAR NA CIDADE&nbsp; →</button><p class="foot">VERSÃO 4.0 · IMMERSIVE HUD</p></div></div>
+<div id="start"><div class="startbox"><div class="pretitle">UMA CIDADE. MIL HISTÓRIAS.</div><h1>VICE CITY<br><span>STORIES</span></h1><p>Explora uma cidade costeira inspirada nos anos 80. Conduz, descobre novos locais e percorre uma cidade construída para explorar.</p><button id="play">ENTRAR NA CIDADE&nbsp; →</button><p class="foot">VERSÃO 5.0 · LIVING CITY</p></div></div>
 <div id="complete"><div class="panel"><div class="eyebrow">Missão concluída</div><h2>JÁ ÉS DA CIDADE.</h2><p>Visitaste os três locais principais de Sunset District.</p><h2 style="color:#ffb35c">+ € 450</h2><button id="again">CONTINUAR A EXPLORAR</button></div></div>
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
@@ -71,6 +71,8 @@ for(let ix=-5;ix<=4;ix++)for(let iz=-5;iz<=4;iz++){
  if([[-15,-45],[45,-45],[45,45],[-105,75],[105,-165],[-105,-105]].some(([x,z])=>cx===x&&cz===z))continue;
  // Leave the starting square open and keep a clear waterfront promenade.
  if(Math.abs(cx)<16&&Math.abs(cz)<16)continue;
+ if(Math.abs(cx+135)<46&&Math.abs(cz-75)<46)continue;
+ if(Math.abs(cx+105)<46&&Math.abs(cz+105)<46)continue;
  const w=7.5+rand()*1.8,d=7.5+rand()*1.8,h=8+rand()*25;
  const bx=cx+(rand()-.5)*.8,bz=cz+(rand()-.5)*.8;
  box(scene,bx,-.015,bz,13,.22,13,sidewalk,false);
@@ -92,24 +94,44 @@ for(let x=-150;x<=150;x+=14){palm(x,-150,.9);palm(x,-165,.75)}
 function landmark(x,z,color,name){box(scene,x,2.5,z,10,5,9,mat(color));box(scene,x,4.7,z+4.58,7,.65,.12,white,false);const sign=new THREE.Mesh(new THREE.BoxGeometry(5,.35,.08),mat(0xffc15e));sign.position.set(x,4.75,z+4.68);scene.add(sign)}
 landmark(-15,-45,0xd57b68,'MOTEL');landmark(45,-45,0x5b9b9b,'CAFE');landmark(45,45,0xd7b45d,'MARKET');
 
-// Hospital: multi-wing medical centre with a raised tower and red cross.
+// Dedicated 2x2 hospital campus with a modern tower, emergency wing, parking and helipad.
+const streetLamps=[];
+const hospitalDoor=new THREE.Vector3(-135,0,85);
 function buildHospital(x,z){
- const concrete=mat(0xd9e0df),blueGlass=mat(0x78a9b6,.25),red=mat(0xc94e4e);
- box(scene,x,3,z,15,6,13,concrete);box(scene,x,8,z-1,11,4,10,white);box(scene,x,13,z-1,8,6,8,concrete);
- box(scene,x-9,2.4,z+1,5,4.8,10,concrete);box(scene,x+9,2.4,z+1,5,4.8,10,concrete);
- for(let y=2;y<=15;y+=2.5)for(let xx=-3;xx<=3;xx+=2)box(scene,x+xx,y,z+3.08,1.25,1.2,.08,blueGlass,false);
- box(scene,x,16.2,z-1,5,.45,5,red,false);box(scene,x,16.2,z-1,.65,.5,3.2,white,false);box(scene,x,16.2,z-1,3.2,.5,.65,white,false);
- box(scene,x,0,z+8,13,.25,2,sidewalk,false);buildingColliders.push({minX:x-12,maxX:x+12,minZ:z-7,maxZ:z+7});
+ const concrete=mat(0xd9e0df),glassWall=mat(0x78a9b6,.22,.15),red=mat(0xc94e4e),roofMat=mat(0x68777b),grass=mat(0x688c62);
+ box(scene,x,-.055,z,52,.12,52,mat(0xb5b9b1),false);
+ box(scene,x,0,z+19,48,.12,9,asphalt,false);
+ box(scene,x,14,z-4,30,28,23,concrete);box(scene,x,28.2,z-4,31,.45,24,roofMat,false);
+ for(let floor=0;floor<7;floor++)for(let col=-5;col<=5;col++){const wx=x+col*2.45,wy=3+floor*3.65;box(scene,wx,wy,z+7.56,1.55,1.75,.08,glassWall,false);box(scene,wx,wy,z-15.56,1.55,1.75,.08,glassWall,false)}
+ box(scene,x-19,5.5,z-3,10,11,18,white);box(scene,x-19,11.2,z-3,10.3,.3,18.3,roofMat,false);
+ box(scene,x-19,2.3,z+6.2,8,4.6,.35,red,false);box(scene,x-19,4.9,z+6.45,7,.65,.12,white,false);
+ box(scene,x,5.5,z+10.4,12,1,5,roofMat,false);box(scene,x-3,2.1,z+7.65,.12,4,.12,glassWall,false);box(scene,x+3,2.1,z+7.65,.12,4,.12,glassWall,false);box(scene,x,1.9,z+7.7,4.5,3.7,.12,glassWall,false);
+ box(scene,x,1.1,z+5.7,5,.9,1.1,white,false);box(scene,x,1.65,z+5.7,3.8,.12,.8,mat(0x536c78),false);
+ box(scene,x,19,z+7.7,12,1.6,.3,blue,false);box(scene,x,19,z+7.9,9,.55,.08,white,false);
+ box(scene,x-19,8,z+6.7,7,1.3,.3,red,false);box(scene,x-19,8,z+6.9,4,.35,.08,white,false);
+ box(scene,x+4,28.55,z-5,12,.12,12,mat(0x596a70),false);box(scene,x+4,28.64,z-5,5,.035,5,white,false);box(scene,x+4,28.68,z-5,.65,.05,3.4,red,false);box(scene,x+4,28.68,z-5,3.4,.05,.65,red,false);
+ for(const [dx,dz] of [[-5,-5],[5,-5],[-5,5],[5,5]]){const beacon=new THREE.Mesh(new THREE.SphereGeometry(.22,8,8),mat(0xff5145));beacon.position.set(x+4+dx,29,z-5+dz);scene.add(beacon)}
+ box(scene,x-19,0,z+13,12,.16,10,mat(0x737e82),false);box(scene,x-19,6.2,z+12,13,.35,9,white,false);
+ for(let i=0;i<2;i++){const ax=x-22+i*6,az=z+17;box(scene,ax,.8,az,2.5,1.5,4.5,white);box(scene,ax,.95,az,2.55,.22,4.55,red,false);box(scene,ax,1.75,az-.3,1.9,.7,2,glassWall,false);box(scene,ax,2.2,az,1.1,.18,.35,red,false)}
+ box(scene,x+17,.02,z+5,12,.08,25,asphalt,false);for(let i=0;i<5;i++)box(scene,x+17,.08,z-5+i*4,2.5,.025,.12,white,false);
+ for(const gx of [x-23,x+23]){box(scene,gx,.02,z-8,4,.08,23,grass,false);for(let j=0;j<3;j++)palm(gx,z-15+j*7,.58)}
+ for(let j=0;j<3;j++){box(scene,x-7+j*7,.45,z+22,2,.12,.55,trunkMat,false);box(scene,x-7+j*7,.8,z+22,.12,.6,.12,trunkMat,false)}
+ for(const [lx,lz] of [[x-23,z+20],[x+23,z+20],[x-23,z-20],[x+23,z-20]]){const pole=new THREE.Mesh(new THREE.CylinderGeometry(.08,.12,5,8),roofMat);pole.position.set(lx,2.5,lz);scene.add(pole);const lamp=new THREE.PointLight(0xffdca6,0,11);lamp.position.set(lx,4.8,lz);scene.add(lamp);streetLamps.push(lamp)}
+ buildingColliders.push({minX:x-25,maxX:x+13,minZ:z-17,maxZ:z+9},{minX:x-25,maxX:x-13,minZ:z+9,maxZ:z+20});
 }
-buildHospital(-105,75);
-// Stadium: open oval arena, visible seating tiers and roof ring.
+buildHospital(-135,75);
+// Stadium also occupies an expanded 2x2 campus block, away from traffic lanes.
+const stadiumDoor=new THREE.Vector3(-105,0,-81);
 function buildStadium(x,z){
- const tierMat=[mat(0x9a8068),mat(0xc0a17c),mat(0xe1c89c)];
- for(let i=0;i<3;i++){const radius=19-i*3;const tier=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius-1,2,40,1,true),tierMat[i]);tier.position.set(x,2+i*2,z);scene.add(tier)}
- const field=new THREE.Mesh(new THREE.CircleGeometry(8.4,32),mat(0x5e9167));field.rotation.x=-Math.PI/2;field.position.set(x,.25,z);scene.add(field);
- const roof=new THREE.Mesh(new THREE.TorusGeometry(17,.8,8,48),mat(0xe4e0d4));roof.rotation.x=Math.PI/2;roof.position.set(x,8,z);scene.add(roof);
- for(let a=0;a<Math.PI*2;a+=Math.PI/12){const p=new THREE.Mesh(new THREE.CylinderGeometry(.18,.25,7,6),mat(0x66747a));p.position.set(x+Math.cos(a)*16,4,z+Math.sin(a)*13);scene.add(p)}
- box(scene,x,0,z+18,15,.25,3,sidewalk,false);buildingColliders.push({minX:x-20,maxX:x+20,minZ:z-16,maxZ:z+16});
+ box(scene,x,-.055,z,52,.12,52,mat(0xb4b6ae),false);
+ const base=mat(0x9a8068),tier=mat(0xc0a17c),upper=mat(0xe1c89c),roof=mat(0xd8dedc);
+ const outer=new THREE.Mesh(new THREE.CylinderGeometry(21,20,7,48,1,true),base);outer.position.set(x,4,z);scene.add(outer);
+ for(let i=0;i<3;i++){const r=20-i*3;const ring=new THREE.Mesh(new THREE.CylinderGeometry(r,r-1.4,2,48,1,true),i===0?base:i===1?tier:upper);ring.position.set(x,3+i*2,z);scene.add(ring)}
+ const field=new THREE.Mesh(new THREE.CircleGeometry(9,40),mat(0x5e9167));field.rotation.x=-Math.PI/2;field.position.set(x,.22,z);scene.add(field);
+ const roofRing=new THREE.Mesh(new THREE.TorusGeometry(19,.9,8,56),roof);roofRing.rotation.x=Math.PI/2;roofRing.position.set(x,9,z);scene.add(roofRing);
+ for(let a=0;a<Math.PI*2;a+=Math.PI/16){const p=new THREE.Mesh(new THREE.CylinderGeometry(.22,.3,8,8),roof);p.position.set(x+Math.cos(a)*18,4.5,z+Math.sin(a)*18);scene.add(p)}
+ box(scene,x,2,z+23,14,4,1,roof,false);box(scene,x,4.3,z+23,10,.7,.15,blue,false);box(scene,x,0,z+25,38,.12,8,mat(0xb6b8b1),false);
+ buildingColliders.push({minX:x-22,maxX:x+22,minZ:z-22,maxZ:z+18});
 }
 buildStadium(-105,-105);
 // Marina moved to the actual waterfront, with terminal, piers and moored boats.
@@ -134,14 +156,14 @@ const car=makeCar();car.position.set(5,0,5);scene.add(car);const cars=[car];
 for(let i=0;i<5;i++){const c=makeCar([0x4f91a8,0xe7d4b1,0xc86f64,0x4d665b,0xe1b64e][i]);c.position.set(-75+i*30,0,90);c.rotation.y=Math.PI/2;scene.add(c);cars.push(c)}
 // Mission checkpoints, each activated in sequence whether on foot or in a vehicle.
 const missions=[
- {title:'ENTREGA EXPRESSA',desc:'Leva a encomenda até ao Café Sunset.',target:'Café Sunset',point:new THREE.Vector3(45,0,-32),reward:200},
- {title:'RECOLHA NO MOTEL',desc:'Vai buscar o pacote que ficou no motel.',target:'Motel Ocean',point:new THREE.Vector3(-15,0,-32),reward:250},
- {title:'ÚLTIMA ENTREGA',desc:'Entrega o pacote no Mercado Central.',target:'Mercado Central',point:new THREE.Vector3(45,0,32),reward:300}
+ {title:'ENTREGA EXPRESSA',desc:'Passa pela entrada do Café Sunset.',target:'Rua do Café Sunset',point:new THREE.Vector3(45,0,-30),reward:200},
+ {title:'RECOLHA NO MOTEL',desc:'Passa pela entrada do Motel Ocean.',target:'Avenida Ocean · Motel',point:new THREE.Vector3(-15,0,-30),reward:250},
+ {title:'ÚLTIMA ENTREGA',desc:'Passa pela entrada do Mercado Central.',target:'Rua do Mercado Central',point:new THREE.Vector3(45,0,30),reward:300}
 ];
 const checkpoints=missions.map(m=>m.point);
-const rings=[];checkpoints.forEach(p=>{const ring=new THREE.Mesh(new THREE.TorusGeometry(2.6,.23,8,32),yellow);ring.rotation.x=Math.PI/2;ring.position.set(p.x,1.5,p.z);scene.add(ring);const beam=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,4,8),new THREE.MeshBasicMaterial({color:0xffbb66,transparent:true,opacity:.28}));beam.position.set(p.x,2,p.z);scene.add(beam);rings.push(ring)});
-let checkpointIndex=0,gameStarted=false,missionStarted=false,missionDone=false,inCar=false,activeCar=car,carSpeed=0,heading=0,toastTimer,cameraMode='third',mapExpanded=false,stamina=100,phoneOpen=false,health=100,armor=50;
-const keys={};addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(!keys[k]&&k==='f')startMission();keys[k]=true;if(['w','a','s','d',' '].includes(k))e.preventDefault();if(k==='e')toggleCar();if(k==='r')resetPosition();if(k==='v')toggleCamera();if(k==='m')toggleMap();if(k==='p')togglePhone()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+const rings=[];checkpoints.forEach(p=>{const ring=new THREE.Mesh(new THREE.TorusGeometry(2.1,.12,8,32),yellow);ring.rotation.x=Math.PI/2;ring.position.set(p.x,.35,p.z);ring.visible=false;scene.add(ring);rings.push(ring)});
+let checkpointIndex=0,gameStarted=false,missionStarted=false,missionDone=false,inCar=false,activeCar=car,carSpeed=0,heading=0,toastTimer,cameraMode='third',mapExpanded=false,stamina=100,phoneOpen=false,health=100,armor=50,nightMode=false,currentInterior=null,outsidePosition=null;
+const keys={};addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(!keys[k]&&k==='f')startMission();keys[k]=true;if(['w','a','s','d',' '].includes(k))e.preventDefault();if(k==='e')toggleCar();if(k==='r')resetPosition();if(k==='v')toggleCamera();if(k==='m')toggleMap();if(k==='p')togglePhone();if(k==='n')toggleNight()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
 function toast(t){const el=document.querySelector('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2300)}
 function updateObjective(){
  const o=document.querySelector('#objective'),m=missions[checkpointIndex];
@@ -150,15 +172,19 @@ function updateObjective(){
  else if(missionDone){document.querySelector('#missionType').textContent='CAMPANHA CONCLUÍDA';document.querySelector('#missionTitle').textContent='TRABALHO FEITO';document.querySelector('#missionDesc').textContent='Concluíste os primeiros trabalhos de Sunset District.';o.textContent='Explora a cidade livremente';}
  else{document.querySelector('#missionType').textContent='MISSÃO '+String(checkpointIndex+1).padStart(2,'0')+' / 03';document.querySelector('#missionTitle').textContent=m.title;document.querySelector('#missionDesc').textContent=m.desc;o.textContent='Dirige-te a: '+m.target;}
 }
-function toggleCar(){if(!gameStarted)return;if(!inCar){let nearest=null,dist=5.5;for(const c of cars){const d=player.position.distanceTo(c.position);if(d<dist){nearest=c;dist=d}}if(nearest){activeCar=nearest;inCar=true;player.visible=false;carSpeed=0;toast('ENTRASTE NO VEÍCULO');updateObjective()}else toast('APROXIMA-TE DE UM CARRO')}else{inCar=false;player.visible=true;const sideX=Math.cos(activeCar.rotation.y)*2.2,sideZ=-Math.sin(activeCar.rotation.y)*2.2;let ex=activeCar.position.x+sideX,ez=activeCar.position.z+sideZ;if(collides(ex,ez,.65)){ex=activeCar.position.x-sideX;ez=activeCar.position.z-sideZ;}player.position.set(ex,0,ez);heading=activeCar.rotation.y;player.rotation.y=heading;carSpeed=0;updateObjective()}}
+function toggleCar(){if(!gameStarted)return;if(currentInterior){player.position.copy(outsidePosition);currentInterior=null;outsidePosition=null;toast('SAÍSTE DO EDIFÍCIO');return;}if(!inCar){const entrance=interiorEntrances.find(e=>player.position.distanceTo(e.door)<5);if(entrance){outsidePosition=player.position.clone();currentInterior=entrance.group;player.position.copy(entrance.spawn);player.position.z+=2;toast('ENTRASTE: '+entrance.name);return;}let nearest=null,dist=5.5;for(const c of cars){const d=player.position.distanceTo(c.position);if(d<dist){nearest=c;dist=d}}if(nearest){activeCar=nearest;inCar=true;player.visible=false;carSpeed=0;toast('ENTRASTE NO VEÍCULO');updateObjective()}else toast('APROXIMA-TE DE UM CARRO')}else{inCar=false;player.visible=true;const sideX=Math.cos(activeCar.rotation.y)*2.2,sideZ=-Math.sin(activeCar.rotation.y)*2.2;let ex=activeCar.position.x+sideX,ez=activeCar.position.z+sideZ;if(collides(ex,ez,.65)){ex=activeCar.position.x-sideX;ez=activeCar.position.z-sideZ;}player.position.set(ex,0,ez);heading=activeCar.rotation.y;player.rotation.y=heading;carSpeed=0;updateObjective()}}
 function toggleCamera(){cameraMode=cameraMode==='third'?'first':'third';toast(cameraMode==='first'?'CÂMARA: PRIMEIRA PESSOA':'CÂMARA: TERCEIRA PESSOA')}
 function toggleMap(){mapExpanded=!mapExpanded;document.querySelector('#mapwrap').classList.toggle('expanded',mapExpanded);toast(mapExpanded?'MAPA DA CIDADE':'MINIMAPA')}
 function togglePhone(){phoneOpen=!phoneOpen;document.querySelector('#phone').classList.toggle('open',phoneOpen)}
+function toggleNight(){nightMode=!nightMode;sun.intensity=nightMode?.18:3;scene.children.find(o=>o.isHemisphereLight).intensity=nightMode?.22:2;scene.background.set(nightMode?0x071321:0x91bdc5);scene.fog.color.set(nightMode?0x071321:0x91bdc5);renderer.toneMappingExposure=nightMode?.72:1.12;streetLamps.forEach(l=>l.intensity=nightMode?2.1:0);toast(nightMode?'MODO NOTURNO':'MODO DIURNO')}
+const interiorGroups=[];function makeInterior(x,z){const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);box(g,0,-.12,0,18,.25,14,mat(0xb7b5aa),false);box(g,0,3,-7,18,6,.3,white);box(g,-9,3,0,.3,6,14,white);box(g,9,3,0,.3,6,14,white);box(g,0,3,7,18,6,.3,white);for(let i=-1;i<=1;i++)box(g,i*4,1.5,-6.75,3,2.5,.08,glass,false);box(g,0,1,0,5,1.2,1.2,mat(0x647b84));box(g,-5,.6,-2,2,1.2,1.5,trunkMat);box(g,5,.6,-2,2,1.2,1.5,trunkMat);box(g,0,4.5,-6.7,5,.65,.12,blue,false);interiorGroups.push(g);return g}
+const hospitalInterior=makeInterior(0,500),cafeInterior=makeInterior(0,530),stadiumInterior=makeInterior(0,560);
+const interiorEntrances=[{name:'HOSPITAL',door:hospitalDoor,group:hospitalInterior,spawn:new THREE.Vector3(0,0,500)},{name:'CAFÉ SUNSET',door:new THREE.Vector3(45,0,-39),group:cafeInterior,spawn:new THREE.Vector3(0,0,530)},{name:'ESTÁDIO',door:stadiumDoor,group:stadiumInterior,spawn:new THREE.Vector3(0,0,560)}];
 function start(){document.querySelector('#start').style.opacity=0;setTimeout(()=>document.querySelector('#start').style.display='none',700);gameStarted=true;toast('BEM-VINDO A VICE CITY');updateObjective()}
 function startMission(){if(!missionStarted){missionStarted=true;updateObjective();toast('MISSÃO ACEITE: '+missions[0].title);return;}if(missionDone){toast('JÁ CONCLUÍSTE OS TRABALHOS INICIAIS');return;}toast('MISSÃO ATIVA: '+missions[checkpointIndex].target)}
 document.querySelector('#play').onclick=start;document.querySelector('#again').onclick=()=>document.querySelector('#complete').style.display='none';
 function overlapsBuilding(x,z,r=1.2){return buildingColliders.some(b=>x+r>b.minX&&x-r<b.maxX&&z+r>b.minZ&&z-r<b.maxZ)}
-function collides(x,z,r=1.2){if(x<-166||x>166||z<-210||z>166)return true;return overlapsBuilding(x,z,r)}
+function collides(x,z,r=1.2){if(currentInterior)return false;if(x<-166||x>166||z<-210||z>166)return true;return overlapsBuilding(x,z,r)}
 function carHitsBuilding(x,z,yaw){
  const halfWidth=1.12,halfLength=2.12,fx=Math.sin(yaw),fz=Math.cos(yaw),rx=Math.cos(yaw),rz=-Math.sin(yaw);
  for(const b of buildingColliders){
@@ -186,17 +212,34 @@ function drawMap(){
  ctx.clearRect(0,0,300,300);ctx.fillStyle='#1b3038';ctx.fillRect(0,0,300,300);
  ctx.fillStyle='#56636a';for(let n=-5;n<=5;n++){const p=150+n*30*.78;ctx.fillRect(p-4,0,8,300);ctx.fillRect(0,p-4,300,8)}
  ctx.fillStyle='#36899b';ctx.fillRect(0,0,300,24);ctx.fillStyle='#d4b88d';ctx.fillRect(0,24,300,5);
- const mapPoints=[{name:'CAFÉ',x:45,z:-45,color:'#ffbd72'},{name:'MOTEL',x:-15,z:-45,color:'#ffbd72'},{name:'MERCADO',x:45,z:45,color:'#ffbd72'},{name:'HOSPITAL',x:-105,z:75,color:'#8ed1df'},{name:'MARINA',x:105,z:-183,color:'#8ed1df'},{name:'ESTÁDIO',x:-105,z:-105,color:'#8ed1df'}];
+ const mapPoints=[{name:'HOSPITAL',x:-135,z:75,color:'#8ed1df'},{name:'MARINA',x:105,z:-183,color:'#8ed1df'},{name:'ESTÁDIO',x:-105,z:-105,color:'#8ed1df'}];
  mapPoints.forEach((p,i)=>{const active=missionStarted&&!missionDone&&i===checkpointIndex;const x=150+p.x*.78,y=150+p.z*.78;ctx.fillStyle=active?'#ffbd72':p.color;ctx.beginPath();ctx.arc(x,y,active?7:4,0,Math.PI*2);ctx.fill();ctx.font=active?'bold 10px Inter':'8px Inter';ctx.textAlign='center';ctx.fillStyle=active?'#fff':'#c7d5d9';ctx.fillText(p.name,x,y-8)});
  const actor=inCar?activeCar:player,p=actor.position,yaw=actor.rotation.y;
  const mx=150+p.x*.78,my=150+p.z*.78;
  // Direction arrow: points in the exact direction the player/car is facing.
  // Draw the arrow from the actor's actual forward vector (+Z rotated by yaw).
  const fx=Math.sin(yaw),fy=Math.cos(yaw),px=fy,py=-fx;
- if(missionStarted&&!missionDone){const dest=missions[checkpointIndex].point;ctx.strokeStyle='rgba(255,190,112,.85)';ctx.lineWidth=2;ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(mx,my);ctx.lineTo(150+dest.x*.78,150+dest.z*.78);ctx.stroke();ctx.setLineDash([])}
+ if(missionStarted&&!missionDone){
+ const dest=missions[checkpointIndex].point,snap=v=>Math.round(v/30)*30,sx=snap(p.x),sz=snap(p.z),dx=snap(dest.x),dz=snap(dest.z);
+ const hCost=Math.abs(p.z-sz)+Math.abs(p.x-dx)+Math.abs(sz-dz),vCost=Math.abs(p.x-sx)+Math.abs(p.z-dz)+Math.abs(sx-dx);
+ const path=hCost<=vCost?[{x:p.x,z:sz},{x:dx,z:sz},{x:dest.x,z:dz}]:[{x:sx,z:p.z},{x:sx,z:dz},{x:dest.x,z:dz}];
+ ctx.strokeStyle='rgba(255,190,112,.95)';ctx.lineWidth=3;ctx.lineCap='round';ctx.lineJoin='round';ctx.setLineDash([]);ctx.beginPath();ctx.moveTo(mx,my);path.forEach(q=>ctx.lineTo(150+q.x*.78,150+q.z*.78));ctx.stroke();
+ ctx.fillStyle='#ffbd72';ctx.beginPath();ctx.arc(150+dest.x*.78,150+dest.z*.78,3,0,Math.PI*2);ctx.fill();
+ }
  ctx.fillStyle='#fff';ctx.strokeStyle='#0b1720';ctx.lineWidth=2;
  ctx.beginPath();ctx.moveTo(mx+fx*12,my+fy*12);ctx.lineTo(mx-fx*8+px*6,my-fy*8+py*6);ctx.lineTo(mx-fx*4,my-fy*4);ctx.lineTo(mx-fx*8-px*6,my-fy*8-py*6);ctx.closePath();ctx.fill();ctx.stroke();
 }
+// Ambient city life: moving traffic, pedestrians and traffic lights.
+const trafficCars=[];
+for(let i=0;i<7;i++){const tc=makeCar([0x4f91a8,0xe7d4b1,0xc86f64,0x4d665b,0xe1b64e,0x777f91,0xb9b5a7][i]);tc.rotation.y=Math.PI/2;tc.position.set(-150+i*42,0,[-33,-27,63,57,123,-93,87][i]);scene.add(tc);trafficCars.push({mesh:tc,speed:3.5+(i%3)*1.1,direction:i%2?1:-1})}
+const pedestrians=[];
+function makePedestrian(x,z,color){const g=new THREE.Group();box(g,0,1,0,.48,.9,.3,mat(color));const h=new THREE.Mesh(new THREE.SphereGeometry(.22,12,10),mat(0xc99573));h.position.y=1.62;g.add(h);box(g,-.13,.3,0,.16,.6,.18,dark);box(g,.13,.3,0,.16,.6,.18,dark);g.position.set(x,0,z);scene.add(g);pedestrians.push({mesh:g,origin:new THREE.Vector3(x,0,z),phase:Math.random()*6.28})}
+for(let i=0;i<12;i++)makePedestrian(-12+(i%4)*8,18+Math.floor(i/4)*3,[0x4b7c99,0x8b5c52,0x617b5b,0xb49a6e][i%4]);
+for(let i=0;i<8;i++)makePedestrian(58+(i%4)*2,-45+Math.floor(i/4)*4,[0x4b7c99,0x8b5c52,0x617b5b,0xb49a6e][i%4]);
+const signals=[];
+function trafficLight(x,z){const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);const pole=new THREE.Mesh(new THREE.CylinderGeometry(.09,.12,5,8),mat(0x303b42));pole.position.y=2.5;g.add(pole);box(g,0,4.6,0,.7,1.5,.45,dark,false);const lamps=[];for(let i=0;i<3;i++){const m=new THREE.MeshStandardMaterial({color:[0xff3d35,0xffc64d,0x45d17a][i],emissive:[0x660800,0x665000,0x075522][i],emissiveIntensity:.2});const l=new THREE.Mesh(new THREE.SphereGeometry(.19,10,8),m);l.position.set(0,5.05-i*.43,.24);g.add(l);lamps.push(l)}signals.push({lamps,phase:Math.random()*10})}
+[[-30,-30],[60,30],[-60,90],[90,-90]].forEach(([x,z])=>{trafficLight(x+5,z+5);trafficLight(x-5,z-5)});
+function updateCity(dt,now){trafficCars.forEach(t=>{t.mesh.position.x+=t.speed*t.direction*dt;if(t.mesh.position.x>165)t.mesh.position.x=-165;if(t.mesh.position.x< -165)t.mesh.position.x=165});pedestrians.forEach(p=>{p.phase+=dt*.45;p.mesh.position.x=p.origin.x+Math.sin(p.phase)*2.2;p.mesh.position.z=p.origin.z+Math.cos(p.phase*.7)*.8;p.mesh.rotation.y=Math.cos(p.phase)>0?Math.PI/2:-Math.PI/2});signals.forEach(sig=>{const phase=(now*.001+sig.phase)%12,active=phase<5?0:phase<6?1:2;sig.lamps.forEach((l,i)=>l.material.emissiveIntensity=i===active?2.2:.12)})}
 let last=performance.now();function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-last)/1000,.04);last=now;
 let forward=(keys.w?1:0)-(keys.s?1:0),turn=(keys.a?1:0)-(keys.d?1:0);if(!inCar){if(keys.shift&&forward>0)stamina=Math.max(0,stamina-dt*22);else stamina=Math.min(100,stamina+dt*13)}
 if(inCar){
@@ -208,7 +251,7 @@ if(inCar){
  document.querySelector('#speed').textContent=String(Math.round(Math.abs(carSpeed)*5)).padStart(3,'0');document.querySelector('#gear').textContent=carSpeed>1?'D':carSpeed< -1?'R':'N';document.querySelector('#vehicle-hud').style.display='flex';document.querySelector('#player-state').textContent='A CONDUZIR'
 }
 else{const move=forward*(keys.shift?9:5.5)*dt;heading+=turn*dt*2.4;player.rotation.y=heading;const nx=player.position.x+Math.sin(heading)*move,nz=player.position.z+Math.cos(heading)*move;if(!collides(nx,player.position.z,.65))player.position.x=nx;if(!collides(player.position.x,nz,.65))player.position.z=nz;document.querySelector('#speed').textContent='000';document.querySelector('#gear').textContent='N';document.querySelector('#vehicle-hud').style.display='none';document.querySelector('#player-state').textContent='A PÉ'}
-rings.forEach((r,i)=>{r.rotation.z+=dt*.65;r.visible=missionStarted&&!missionDone&&i===checkpointIndex});
+rings.forEach((r,i)=>{r.rotation.z+=dt*.65;r.visible=false});
 const actor=inCar?activeCar:player;if(missionStarted&&!missionDone&&checkpointIndex<missions.length&&actor.position.distanceTo(checkpoints[checkpointIndex])<9){
  const reward=missions[checkpointIndex].reward;const total=250+missions.slice(0,checkpointIndex+1).reduce((sum,m)=>sum+m.reward,0);
  checkpointIndex++;document.querySelector('#money').textContent='€ '+total;updateObjective();
@@ -217,7 +260,7 @@ const actor=inCar?activeCar:player;if(missionStarted&&!missionDone&&checkpointIn
  else toast('MISSÃO CONCLUÍDA · +€'+reward+' | PRÓXIMA: '+missions[checkpointIndex].title);
 }
 if(cameraMode==='first'){const eyeY=inCar?1.35:1.68;const eyeOffset=inCar?.45:0;const eye=new THREE.Vector3(actor.position.x+Math.sin(actor.rotation.y)*eyeOffset,eyeY,actor.position.z+Math.cos(actor.rotation.y)*eyeOffset);const look=new THREE.Vector3(actor.position.x+Math.sin(actor.rotation.y)*24,eyeY,actor.position.z+Math.cos(actor.rotation.y)*24);camera.position.lerp(eye,1-Math.pow(.00001,dt));camera.lookAt(look)}else{const desired=new THREE.Vector3(actor.position.x+Math.sin(actor.rotation.y)*-11,8,actor.position.z+Math.cos(actor.rotation.y)*-11);camera.position.lerp(desired,1-Math.pow(.001,dt));camera.lookAt(actor.position.x,1.2,actor.position.z)}
-const target=missionStarted&&!missionDone?missions[checkpointIndex].point:null;const dist=target?Math.round(actor.position.distanceTo(target)):0;document.querySelector('#gps-distance').textContent=target?dist+' M · '+missions[checkpointIndex].target.toUpperCase():'SEM DESTINO';
+updateCity(dt,now);const target=missionStarted&&!missionDone?missions[checkpointIndex].point:null;const dist=target?Math.round(actor.position.distanceTo(target)):0;document.querySelector('#gps-distance').textContent=target?dist+' M · '+missions[checkpointIndex].target.toUpperCase():'SEM DESTINO';
 const staminaPct=Math.round(stamina);document.querySelector('#stamina-bar').style.width=staminaPct+'%';document.querySelector('#stamina-value').textContent=staminaPct;document.querySelector('#health-bar').style.width=health+'%';document.querySelector('#health-value').textContent=health;document.querySelector('#armor-bar').style.width=armor+'%';document.querySelector('#armor-value').textContent=armor;
 const area=actor.position.z < -120?'OCEANFRONT':actor.position.x < -60?'WESTSIDE':actor.position.x > 60?'EAST BAY':actor.position.z > 60?'SOUTH DOWNTOWN':'SUNSET DISTRICT';document.querySelector('#map-area').textContent=area;document.querySelector('#district').textContent=area+' · VICE CITY · 1986';drawMap();renderer.render(scene,camera)}
 requestAnimationFrame(animate);
