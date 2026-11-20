@@ -44,7 +44,7 @@
 <div id="mapwrap"><div id="map-title"><span>MAPA</span><b id="map-area">SUNSET DISTRICT</b></div><canvas id="map" width="300" height="300"></canvas></div>
 <div id="controls"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> MOVER / CONDUZIR<br><kbd>SHIFT</kbd> CORRER &nbsp; <kbd>E</kbd> ENTRAR / SAIR<br><kbd>R</kbd> REPOSICIONAR &nbsp; <kbd>F</kbd> MISSÃO<br><kbd>V</kbd> CÂMARA &nbsp; <kbd>M</kbd> MAPA &nbsp; <kbd>P</kbd> TELEMÓVEL</div>
 <div id="toast"></div>
-<div id="start"><div class="startbox"><div class="pretitle">UMA CIDADE. MIL HISTÓRIAS.</div><h1>VICE CITY<br><span>STORIES</span></h1><p>Explora uma cidade costeira inspirada nos anos 80. Conduz, descobre novos locais e percorre uma cidade construída para explorar.</p><button id="play">ENTRAR NA CIDADE&nbsp; →</button><p class="foot">VERSÃO 5.0 · FASE 1 · IMMERSIVE HUD</p></div></div>
+<div id="start"><div class="startbox"><div class="pretitle">UMA CIDADE. MIL HISTÓRIAS.</div><h1>VICE CITY<br><span>STORIES</span></h1><p>Explora uma cidade costeira inspirada nos anos 80. Conduz, descobre novos locais e percorre uma cidade construída para explorar.</p><button id="play">ENTRAR NA CIDADE&nbsp; →</button><p class="foot">VERSÃO 5.0 · FASE 2 · ROAD NETWORK</p></div></div>
 <div id="complete"><div class="panel"><div class="eyebrow">Missão concluída</div><h2>JÁ ÉS DA CIDADE.</h2><p>Visitaste os três locais principais de Sunset District.</p><h2 style="color:#ffb35c">+ € 450</h2><button id="again">CONTINUAR A EXPLORAR</button></div></div>
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
@@ -60,19 +60,23 @@ const ground=new THREE.Mesh(new THREE.PlaneGeometry(600,600),mat(0x9caa91));grou
 function box(parent,x,y,z,w,h,d,material,shadow=true){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);o.position.set(x,y,z);o.castShadow=shadow;o.receiveShadow=true;parent.add(o);return o}
 const roadGroup=new THREE.Group();scene.add(roadGroup);
 const roadLines=[];for(let n=-5;n<=5;n++)roadLines.push(n*30);
-for(const z of roadLines){box(roadGroup,0,-.09,z,340,.18,14,asphalt,false);box(roadGroup,0,.012,z,340,.025,.16,yellow,false);for(let x=-165;x<170;x+=10){box(roadGroup,x,.014,z-3.5,4,.025,.13,white,false);box(roadGroup,x,.014,z+3.5,4,.025,.13,white,false)}}
-for(const x of roadLines){box(roadGroup,x,-.09,0,14,.18,340,asphalt,false);box(roadGroup,x,.012,0,.16,.025,340,yellow,false);for(let z=-165;z<170;z+=10){box(roadGroup,x-3.5,.014,z,.13,.025,4,white,false);box(roadGroup,x+3.5,.014,z,.13,.025,4,white,false)}}
+const campusRoadCuts=[{minX:-146,maxX:-94,minZ:49,maxZ:101},{minX:-116,maxX:-64,minZ:-116,maxZ:-64}];
+function roadIntervals(a,b,c,d){const out=[];if(c>a)out.push([a,Math.min(c,b)]);if(d<b)out.push([Math.max(d,a),b]);return out.filter(p=>p[1]-p[0]>1)}
+function addHorizontalRoad(z,a,b){box(roadGroup,(a+b)/2,-.09,z,b-a,.18,14,asphalt,false);box(roadGroup,(a+b)/2,.012,z,b-a,.025,.16,yellow,false);for(let x=Math.ceil(a/10)*10;x<b;x+=10){box(roadGroup,x,.014,z-3.5,4,.025,.13,white,false);box(roadGroup,x,.014,z+3.5,4,.025,.13,white,false)}}
+function addVerticalRoad(x,a,b){box(roadGroup,x,-.09,(a+b)/2,14,.18,b-a,asphalt,false);box(roadGroup,x,.012,(a+b)/2,.16,.025,b-a,yellow,false);for(let z=Math.ceil(a/10)*10;z<b;z+=10){box(roadGroup,x-3.5,.014,z,.13,.025,4,white,false);box(roadGroup,x+3.5,.014,z,.13,.025,4,white,false)}}
+for(const z of roadLines){let parts=[[-170,170]];for(const c of campusRoadCuts)if(z>=c.minZ-7&&z<=c.maxZ+7)parts=parts.flatMap(([a,b])=>roadIntervals(a,b,c.minX-7,c.maxX+7));for(const [a,b] of parts)addHorizontalRoad(z,a,b)}
+for(const x of roadLines){let parts=[[-170,170]];for(const c of campusRoadCuts)if(x>=c.minX-7&&x<=c.maxX+7)parts=parts.flatMap(([a,b])=>roadIntervals(a,b,c.minZ-7,c.maxZ+7));for(const [a,b] of parts)addVerticalRoad(x,a,b)}
 // Pavements and properly aligned city blocks: buildings sit BETWEEN roads, never on road surfaces.
 const buildingColliders=[];
 let seed=27;function rand(){seed=(seed*9301+49297)%233280;return seed/233280}
 const buildingMats=[mat(0xe5c9a6),mat(0xd6a98e),mat(0xc5d2cb),mat(0xe9d9b9),mat(0xb6c7c5),mat(0xd8b8c2),mat(0xaaaeb1)];
 for(let ix=-5;ix<=4;ix++)for(let iz=-5;iz<=4;iz++){
  const cx=ix*30+15,cz=iz*30+15;if(cz<-158)continue;
- if([[-15,-45],[45,-45],[45,45],[-105,75],[105,-165],[-105,-105]].some(([x,z])=>cx===x&&cz===z))continue;
+ if([[-15,-45],[45,-45],[45,45],[105,-165]].some(([x,z])=>cx===x&&cz===z))continue;
  // Leave the starting square open and keep a clear waterfront promenade.
  if(Math.abs(cx)<16&&Math.abs(cz)<16)continue;
- if(Math.abs(cx+135)<46&&Math.abs(cz-75)<46)continue;
- if(Math.abs(cx+105)<46&&Math.abs(cz+105)<46)continue;
+ if(Math.abs(cx+120)<46&&Math.abs(cz-75)<46)continue;
+ if(Math.abs(cx+90)<46&&Math.abs(cz+90)<46)continue;
  const w=7.5+rand()*1.8,d=7.5+rand()*1.8,h=8+rand()*25;
  const bx=cx+(rand()-.5)*.8,bz=cz+(rand()-.5)*.8;
  box(scene,bx,-.015,bz,13,.22,13,sidewalk,false);
@@ -97,7 +101,7 @@ landmark(-15,-45,0xd57b68,'MOTEL');landmark(45,-45,0x5b9b9b,'CAFE');landmark(45,
 // Hospital geral: campus próprio, torre moderna, urgências e estacionamento.
 function buildHospital(x,z){
  const concrete=mat(0xd9e0df),glassWall=mat(0x78a9b6,.22,.15),red=mat(0xc94e4e),roofMat=mat(0x68777b),grass=mat(0x688c62);
- box(scene,x,-.055,z,52,.12,52,mat(0xb5b9b1),false);
+ box(scene,x,-.055,z,46,.12,46,mat(0xb5b9b1),false);
  box(scene,x,0,z+19,48,.12,9,asphalt,false);
  box(scene,x,14,z-4,30,28,23,concrete);box(scene,x,28.2,z-4,31,.45,24,roofMat,false);
  for(let floor=0;floor<7;floor++)for(let col=-5;col<=5;col++){const wx=x+col*2.45,wy=3+floor*3.65;box(scene,wx,wy,z+7.56,1.55,1.75,.08,glassWall,false);box(scene,wx,wy,z-15.56,1.55,1.75,.08,glassWall,false)}
@@ -118,10 +122,10 @@ function buildHospital(x,z){
  for(let j=0;j<3;j++){box(scene,x-7+j*7,.45,z+22,2,.12,.55,trunkMat,false);box(scene,x-7+j*7,.8,z+22,.12,.6,.12,trunkMat,false)}
  buildingColliders.push({minX:x-15,maxX:x+15,minZ:z-16,maxZ:z+8},{minX:x-24,maxX:x-14,minZ:z-12,maxZ:z+7});
 }
-buildHospital(-135,75);
+buildHospital(-120,75);
 // Estádio municipal: recinto oval com bancadas e cobertura, num quarteirão próprio.
 function buildStadium(x,z){
- box(scene,x,-.055,z,52,.12,52,mat(0xb4b6ae),false);
+ box(scene,x,-.055,z,46,.12,46,mat(0xb4b6ae),false);
  const base=mat(0x9a8068),tier=mat(0xc0a17c),upper=mat(0xe1c89c),roof=mat(0xd8dedc);
  const outer=new THREE.Mesh(new THREE.CylinderGeometry(21,20,7,48,1,true),base);outer.position.set(x,4,z);scene.add(outer);
  for(let i=0;i<3;i++){const r=20-i*3;const ring=new THREE.Mesh(new THREE.CylinderGeometry(r,r-1.4,2,48,1,true),i===0?base:i===1?tier:upper);ring.position.set(x,3+i*2,z);scene.add(ring)}
@@ -131,7 +135,7 @@ function buildStadium(x,z){
  box(scene,x,2,z+23,14,4,1,roof,false);box(scene,x,4.3,z+23,10,.7,.15,blue,false);box(scene,x,0,z+25,38,.12,8,mat(0xb6b8b1),false);
  buildingColliders.push({minX:x-22,maxX:x+22,minZ:z-22,maxZ:z+18});
 }
-buildStadium(-105,-105);
+buildStadium(-90,-90);
 // Marina moved to the actual waterfront, with terminal, piers and moored boats.
 function buildMarina(x,z){
  const wood=mat(0x8b684b),paint=mat(0xe6e0d2),boatBlue=mat(0x315d70),mast=mat(0xd7d3c5);
@@ -206,7 +210,7 @@ function drawMap(){
  ctx.clearRect(0,0,300,300);ctx.fillStyle='#1b3038';ctx.fillRect(0,0,300,300);
  ctx.fillStyle='#56636a';for(let n=-5;n<=5;n++){const p=150+n*30*.78;ctx.fillRect(p-4,0,8,300);ctx.fillRect(0,p-4,300,8)}
  ctx.fillStyle='#36899b';ctx.fillRect(0,0,300,24);ctx.fillStyle='#d4b88d';ctx.fillRect(0,24,300,5);
- const mapPoints=[{name:'CAFÉ',x:45,z:-45,color:'#ffbd72'},{name:'MOTEL',x:-15,z:-45,color:'#ffbd72'},{name:'MERCADO',x:45,z:45,color:'#ffbd72'},{name:'HOSPITAL',x:-105,z:75,color:'#8ed1df'},{name:'MARINA',x:105,z:-183,color:'#8ed1df'},{name:'ESTÁDIO',x:-105,z:-105,color:'#8ed1df'}];
+ const mapPoints=[{name:'CAFÉ',x:45,z:-45,color:'#ffbd72'},{name:'MOTEL',x:-15,z:-45,color:'#ffbd72'},{name:'MERCADO',x:45,z:45,color:'#ffbd72'},{name:'HOSPITAL',x:-120,z:75,color:'#8ed1df'},{name:'MARINA',x:105,z:-183,color:'#8ed1df'},{name:'ESTÁDIO',x:-90,z:-90,color:'#8ed1df'}];
  mapPoints.forEach((p,i)=>{const active=missionStarted&&!missionDone&&i===checkpointIndex;const x=150+p.x*.78,y=150+p.z*.78;ctx.fillStyle=active?'#ffbd72':p.color;ctx.beginPath();ctx.arc(x,y,active?7:4,0,Math.PI*2);ctx.fill();ctx.font=active?'bold 10px Inter':'8px Inter';ctx.textAlign='center';ctx.fillStyle=active?'#fff':'#c7d5d9';ctx.fillText(p.name,x,y-8)});
  const actor=inCar?activeCar:player,p=actor.position,yaw=actor.rotation.y;
  const mx=150+p.x*.78,my=150+p.z*.78;
