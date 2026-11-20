@@ -10,12 +10,12 @@
 #top{position:fixed;top:22px;left:24px;z-index:5}.logo{font:900 28px 'Barlow Condensed';letter-spacing:2px;line-height:.9;text-shadow:0 3px 20px #000}.logo span{color:#ffb35c}#district{font-size:10px;letter-spacing:2px;color:#d0dce1;margin-top:6px;text-transform:uppercase}
 #mission{position:fixed;left:24px;top:100px;z-index:5;width:290px;padding:17px 18px;background:linear-gradient(110deg,rgba(7,19,30,.93),rgba(7,19,30,.65));border-left:3px solid #ffb35c;backdrop-filter:blur(12px)}.eyebrow{font-size:9px;letter-spacing:2.4px;color:#ffbd72;font-weight:800;text-transform:uppercase}#mission h2{font:800 24px 'Barlow Condensed';margin:5px 0}#mission p{font-size:11px;line-height:1.6;color:#c5d1d8;margin:0 0 12px}#objective{font-size:10px;color:#fff;display:flex;align-items:center;gap:8px}#objective:before{content:'';width:7px;height:7px;border-radius:50%;background:#ffb35c;box-shadow:0 0 12px #ffb35c}
 #stats{position:fixed;right:24px;top:22px;z-index:5;display:flex;gap:8px}.stat{min-width:90px;padding:10px 13px;background:rgba(7,19,30,.78);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(10px)}.stat small{display:block;color:#a7bac5;font-size:8px;letter-spacing:1.6px;font-weight:700}.stat strong{display:block;font:700 19px 'Barlow Condensed';margin-top:2px}
-#mapwrap{position:fixed;right:24px;bottom:24px;width:164px;height:164px;padding:5px;background:rgba(7,19,30,.86);border:1px solid rgba(255,255,255,.2);z-index:5}#map{width:100%;height:100%}
+#mapwrap{position:fixed;right:24px;bottom:24px;width:220px;height:220px;padding:5px;background:rgba(7,19,30,.86);border:1px solid rgba(255,255,255,.2);z-index:5}#map{width:100%;height:100%}
 #controls{position:fixed;left:24px;bottom:24px;z-index:5;color:#d0dce1;font-size:9px;line-height:1.9;text-shadow:0 2px 6px #000}kbd{display:inline-block;border:1px solid #71828b;border-radius:3px;padding:0 5px;color:#fff;font:700 9px Inter;background:rgba(0,0,0,.4);margin-right:3px}
 #toast{position:fixed;left:50%;top:22%;transform:translate(-50%,-10px);z-index:8;padding:12px 22px;background:rgba(5,16,25,.92);border:1px solid rgba(255,179,92,.6);font-size:11px;letter-spacing:1px;opacity:0;transition:.25s;pointer-events:none}#toast.show{opacity:1;transform:translate(-50%,0)}
 #start{position:fixed;inset:0;z-index:10;display:grid;place-items:center;background:linear-gradient(90deg,rgba(3,10,18,.93),rgba(3,10,18,.4)),linear-gradient(0deg,rgba(3,10,18,.8),transparent 65%);transition:opacity .7s}.startbox{width:min(680px,90vw)}.pretitle{font-size:10px;letter-spacing:5px;color:#ffbd72;font-weight:800}.startbox h1{font:900 clamp(58px,10vw,112px)/.78 'Barlow Condensed';letter-spacing:-2px;margin:17px 0 18px;text-transform:uppercase;text-shadow:0 8px 40px #000}.startbox h1 span{color:#ffb35c}.startbox p{max-width:430px;color:#c1cdd4;font-size:12px;line-height:1.8}.startbox button,#complete button{margin-top:22px;background:#ffb35c;color:#101923;border:0;padding:14px 28px;font:900 12px Inter;letter-spacing:2px;cursor:pointer}.foot{margin-top:48px;font-size:9px!important;letter-spacing:2px;color:#9aadb7!important}
 #complete{position:fixed;inset:0;z-index:9;display:none;place-items:center;background:rgba(3,10,18,.75);backdrop-filter:blur(8px)}#complete .panel{text-align:center;padding:40px;border:1px solid rgba(255,179,92,.5);background:#0a1a27}#complete h2{font:900 50px 'Barlow Condensed';margin:8px}#complete p{font-size:12px;color:#b9c9d3}
-@media(max-width:650px){#mission{top:90px;left:12px;width:225px;padding:12px}#stats{right:12px;top:auto;bottom:165px;flex-direction:column}.stat{min-width:70px;padding:7px 9px}#mapwrap{right:12px;bottom:12px;width:135px;height:135px}#top{left:12px;top:14px}#controls{left:12px;bottom:12px;font-size:8px}.logo{font-size:23px}}
+@media(max-width:650px){#mission{top:90px;left:12px;width:225px;padding:12px}#stats{right:12px;top:auto;bottom:165px;flex-direction:column}.stat{min-width:70px;padding:7px 9px}#mapwrap{right:12px;bottom:12px;width:165px;height:165px}#top{left:12px;top:14px}#controls{left:12px;bottom:12px;font-size:8px}.logo{font-size:23px}}
 </style>
 </head>
 <body>
@@ -81,9 +81,9 @@ const car=makeCar();car.position.set(5,0,5);scene.add(car);const cars=[car];
 for(let i=0;i<5;i++){const c=makeCar([0x4f91a8,0xe7d4b1,0xc86f64,0x4d665b,0xe1b64e][i]);c.position.set(-75+i*30,0,90);c.rotation.y=Math.PI/2;scene.add(c);cars.push(c)}
 // Mission checkpoints, each activated in sequence whether on foot or in a vehicle.
 const missions=[
- {title:'ENTREGA EXPRESSA',desc:'Leva a encomenda até ao Café Sunset.',target:'Café Sunset',point:new THREE.Vector3(45,0,-45),reward:200},
- {title:'RECOLHA NO MOTEL',desc:'Vai buscar o pacote que ficou no motel.',target:'Motel Ocean',point:new THREE.Vector3(-15,0,-45),reward:250},
- {title:'ÚLTIMA ENTREGA',desc:'Entrega o pacote no Mercado Central.',target:'Mercado Central',point:new THREE.Vector3(45,0,45),reward:300}
+ {title:'ENTREGA EXPRESSA',desc:'Leva a encomenda até ao Café Sunset.',target:'Café Sunset',point:new THREE.Vector3(45,0,-32),reward:200},
+ {title:'RECOLHA NO MOTEL',desc:'Vai buscar o pacote que ficou no motel.',target:'Motel Ocean',point:new THREE.Vector3(-15,0,-32),reward:250},
+ {title:'ÚLTIMA ENTREGA',desc:'Entrega o pacote no Mercado Central.',target:'Mercado Central',point:new THREE.Vector3(45,0,32),reward:300}
 ];
 const checkpoints=missions.map(m=>m.point);
 const rings=[];checkpoints.forEach(p=>{const ring=new THREE.Mesh(new THREE.TorusGeometry(2.6,.23,8,32),yellow);ring.rotation.x=Math.PI/2;ring.position.set(p.x,1.5,p.z);scene.add(ring);const beam=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,4,8),new THREE.MeshBasicMaterial({color:0xffbb66,transparent:true,opacity:.28}));beam.position.set(p.x,2,p.z);scene.add(beam);rings.push(ring)});
@@ -134,8 +134,10 @@ function drawMap(){
  const actor=inCar?activeCar:player,p=actor.position,yaw=actor.rotation.y;
  const mx=150+p.x*.95,my=150+p.z*.95;
  // Direction arrow: points in the exact direction the player/car is facing.
- ctx.save();ctx.translate(mx,my);ctx.rotate(yaw+Math.PI);ctx.fillStyle='#fff';ctx.strokeStyle='#0b1720';ctx.lineWidth=2;
- ctx.beginPath();ctx.moveTo(0,10);ctx.lineTo(-7,-7);ctx.lineTo(0,-3);ctx.lineTo(7,-7);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();
+ // Draw the arrow from the actor's actual forward vector (+Z rotated by yaw).
+ const fx=Math.sin(yaw),fy=Math.cos(yaw),px=fy,py=-fx;
+ ctx.fillStyle='#fff';ctx.strokeStyle='#0b1720';ctx.lineWidth=2;
+ ctx.beginPath();ctx.moveTo(mx+fx*12,my+fy*12);ctx.lineTo(mx-fx*8+px*6,my-fy*8+py*6);ctx.lineTo(mx-fx*4,my-fy*4);ctx.lineTo(mx-fx*8-px*6,my-fy*8-py*6);ctx.closePath();ctx.fill();ctx.stroke();
 }
 let last=performance.now();function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-last)/1000,.04);last=now;
 let forward=(keys.w?1:0)-(keys.s?1:0),turn=(keys.a?1:0)-(keys.d?1:0);
@@ -149,7 +151,7 @@ if(inCar){
 }
 else{const move=forward*(keys.shift?9:5.5)*dt;heading+=turn*dt*2.4;player.rotation.y=heading;const nx=player.position.x+Math.sin(heading)*move,nz=player.position.z+Math.cos(heading)*move;if(!collides(nx,player.position.z,.65))player.position.x=nx;if(!collides(player.position.x,nz,.65))player.position.z=nz;document.querySelector('#speed').textContent='0 KM/H'}
 rings.forEach((r,i)=>{r.rotation.z+=dt*.65;r.visible=missionStarted&&!missionDone&&i===checkpointIndex});
-const actor=inCar?activeCar:player;if(missionStarted&&!missionDone&&checkpointIndex<missions.length&&actor.position.distanceTo(checkpoints[checkpointIndex])<7){
+const actor=inCar?activeCar:player;if(missionStarted&&!missionDone&&checkpointIndex<missions.length&&actor.position.distanceTo(checkpoints[checkpointIndex])<9){
  const reward=missions[checkpointIndex].reward;const total=250+missions.slice(0,checkpointIndex+1).reduce((sum,m)=>sum+m.reward,0);
  checkpointIndex++;document.querySelector('#money').textContent='€ '+total;updateObjective();
  toast('MISSÃO CONCLUÍDA · +€'+reward);
