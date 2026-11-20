@@ -121,7 +121,7 @@ function buildHospital(x,z){
 }
 buildHospital(-135,75);
 // Stadium also occupies an expanded 2x2 campus block, away from traffic lanes.
-const stadiumDoor=new THREE.Vector3(-105,0,-81);
+const stadiumDoor=new THREE.Vector3(-105,0,-82);
 function buildStadium(x,z){
  box(scene,x,-.055,z,52,.12,52,mat(0xb4b6ae),false);
  const base=mat(0x9a8068),tier=mat(0xc0a17c),upper=mat(0xe1c89c),roof=mat(0xd8dedc);
@@ -176,7 +176,7 @@ function toggleCar(){if(!gameStarted)return;if(currentInterior){player.position.
 function toggleCamera(){cameraMode=cameraMode==='third'?'first':'third';toast(cameraMode==='first'?'CÂMARA: PRIMEIRA PESSOA':'CÂMARA: TERCEIRA PESSOA')}
 function toggleMap(){mapExpanded=!mapExpanded;document.querySelector('#mapwrap').classList.toggle('expanded',mapExpanded);toast(mapExpanded?'MAPA DA CIDADE':'MINIMAPA')}
 function togglePhone(){phoneOpen=!phoneOpen;document.querySelector('#phone').classList.toggle('open',phoneOpen)}
-function toggleNight(){nightMode=!nightMode;sun.intensity=nightMode?.18:3;scene.children.find(o=>o.isHemisphereLight).intensity=nightMode?.22:2;scene.background.set(nightMode?0x071321:0x91bdc5);scene.fog.color.set(nightMode?0x071321:0x91bdc5);renderer.toneMappingExposure=nightMode?.72:1.12;streetLamps.forEach(l=>l.intensity=nightMode?2.1:0);toast(nightMode?'MODO NOTURNO':'MODO DIURNO')}
+function toggleNight(){nightMode=!nightMode;sun.intensity=nightMode?.18:3;scene.children.find(o=>o.isHemisphereLight).intensity=nightMode?.22:2;scene.background.set(nightMode?0x071321:0x91bdc5);scene.fog.color.set(nightMode?0x071321:0x91bdc5);renderer.toneMappingExposure=nightMode?.72:1.12;streetLamps.forEach(l=>l.intensity=nightMode?2.1:0);lampBulbs.forEach(m=>m.emissiveIntensity=nightMode?2.1:0);toast(nightMode?'MODO NOTURNO':'MODO DIURNO')}
 const interiorGroups=[];function makeInterior(x,z){const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);box(g,0,-.12,0,18,.25,14,mat(0xb7b5aa),false);box(g,0,3,-7,18,6,.3,white);box(g,-9,3,0,.3,6,14,white);box(g,9,3,0,.3,6,14,white);box(g,0,3,7,18,6,.3,white);for(let i=-1;i<=1;i++)box(g,i*4,1.5,-6.75,3,2.5,.08,glass,false);box(g,0,1,0,5,1.2,1.2,mat(0x647b84));box(g,-5,.6,-2,2,1.2,1.5,trunkMat);box(g,5,.6,-2,2,1.2,1.5,trunkMat);box(g,0,4.5,-6.7,5,.65,.12,blue,false);interiorGroups.push(g);return g}
 const hospitalInterior=makeInterior(0,500),cafeInterior=makeInterior(0,530),stadiumInterior=makeInterior(0,560);
 const interiorEntrances=[{name:'HOSPITAL',door:hospitalDoor,group:hospitalInterior,spawn:new THREE.Vector3(0,0,500)},{name:'CAFÉ SUNSET',door:new THREE.Vector3(45,0,-39),group:cafeInterior,spawn:new THREE.Vector3(0,0,530)},{name:'ESTÁDIO',door:stadiumDoor,group:stadiumInterior,spawn:new THREE.Vector3(0,0,560)}];
@@ -231,15 +231,21 @@ function drawMap(){
 }
 // Ambient city life: moving traffic, pedestrians and traffic lights.
 const trafficCars=[];
+const ambulance=new THREE.Group();box(ambulance,0,.85,0,2.5,1.6,4.8,white);box(ambulance,0,.95,0,2.55,.28,4.85,red,false);box(ambulance,0,1.8,-.35,1.9,.65,2.1,glass);box(ambulance,0,2.2,.1,1.2,.18,.4,red,false);ambulance.position.set(-164,0,91);scene.add(ambulance);
 for(let i=0;i<7;i++){const tc=makeCar([0x4f91a8,0xe7d4b1,0xc86f64,0x4d665b,0xe1b64e,0x777f91,0xb9b5a7][i]);tc.rotation.y=Math.PI/2;tc.position.set(-150+i*42,0,[-33,-27,63,57,123,-93,87][i]);scene.add(tc);trafficCars.push({mesh:tc,speed:3.5+(i%3)*1.1,direction:i%2?1:-1})}
 const pedestrians=[];
 function makePedestrian(x,z,color){const g=new THREE.Group();box(g,0,1,0,.48,.9,.3,mat(color));const h=new THREE.Mesh(new THREE.SphereGeometry(.22,12,10),mat(0xc99573));h.position.y=1.62;g.add(h);box(g,-.13,.3,0,.16,.6,.18,dark);box(g,.13,.3,0,.16,.6,.18,dark);g.position.set(x,0,z);scene.add(g);pedestrians.push({mesh:g,origin:new THREE.Vector3(x,0,z),phase:Math.random()*6.28})}
 for(let i=0;i<12;i++)makePedestrian(-12+(i%4)*8,18+Math.floor(i/4)*3,[0x4b7c99,0x8b5c52,0x617b5b,0xb49a6e][i%4]);
 for(let i=0;i<8;i++)makePedestrian(58+(i%4)*2,-45+Math.floor(i/4)*4,[0x4b7c99,0x8b5c52,0x617b5b,0xb49a6e][i%4]);
-const signals=[];
+for(let i=0;i<6;i++)makePedestrian(-110+(i%3)*4,105+Math.floor(i/3)*2,[0x4b7c99,0xffffff,0x8b5c52][i%3]);
+for(let i=0;i<5;i++)makePedestrian(-105+(i%3)*3,-75+Math.floor(i/3)*2,[0x4b7c99,0x8b5c52,0xb49a6e][i%3]);
+const signals=[];const lampBulbs=[];
 function trafficLight(x,z){const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);const pole=new THREE.Mesh(new THREE.CylinderGeometry(.09,.12,5,8),mat(0x303b42));pole.position.y=2.5;g.add(pole);box(g,0,4.6,0,.7,1.5,.45,dark,false);const lamps=[];for(let i=0;i<3;i++){const m=new THREE.MeshStandardMaterial({color:[0xff3d35,0xffc64d,0x45d17a][i],emissive:[0x660800,0x665000,0x075522][i],emissiveIntensity:.2});const l=new THREE.Mesh(new THREE.SphereGeometry(.19,10,8),m);l.position.set(0,5.05-i*.43,.24);g.add(l);lamps.push(l)}signals.push({lamps,phase:Math.random()*10})}
 [[-30,-30],[60,30],[-60,90],[90,-90]].forEach(([x,z])=>{trafficLight(x+5,z+5);trafficLight(x-5,z-5)});
-function updateCity(dt,now){trafficCars.forEach(t=>{t.mesh.position.x+=t.speed*t.direction*dt;if(t.mesh.position.x>165)t.mesh.position.x=-165;if(t.mesh.position.x< -165)t.mesh.position.x=165});pedestrians.forEach(p=>{p.phase+=dt*.45;p.mesh.position.x=p.origin.x+Math.sin(p.phase)*2.2;p.mesh.position.z=p.origin.z+Math.cos(p.phase*.7)*.8;p.mesh.rotation.y=Math.cos(p.phase)>0?Math.PI/2:-Math.PI/2});signals.forEach(sig=>{const phase=(now*.001+sig.phase)%12,active=phase<5?0:phase<6?1:2;sig.lamps.forEach((l,i)=>l.material.emissiveIntensity=i===active?2.2:.12)})}
+function buildStreetLamp(x,z){const pole=new THREE.Mesh(new THREE.CylinderGeometry(.08,.13,6,8),mat(0x414b50));pole.position.set(x,3,z);scene.add(pole);const arm=box(scene,x+.7,5.8,z,1.5,.12,.12,mat(0x414b50),false);const bulbMat=new THREE.MeshStandardMaterial({color:0xffe1a3,emissive:0xffc66b,emissiveIntensity:0});const bulb=new THREE.Mesh(new THREE.SphereGeometry(.22,10,8),bulbMat);bulb.position.set(x+1.25,5.65,z);scene.add(bulb);lampBulbs.push(bulbMat);const light=new THREE.PointLight(0xffd79b,0,17);light.position.set(x+1.25,5.5,z);scene.add(light);streetLamps.push(light)}
+for(let x=-150;x<=150;x+=60){buildStreetLamp(x,-39);buildStreetLamp(x,81)}
+for(let z=-135;z<=135;z+=60){buildStreetLamp(69,z);buildStreetLamp(-69,z)}
+function updateCity(dt,now){ambulance.position.x+=dt*2.4;if(ambulance.position.x>-145)ambulance.position.x=-164;trafficCars.forEach(t=>{t.mesh.position.x+=t.speed*t.direction*dt;if(t.mesh.position.x>165)t.mesh.position.x=-165;if(t.mesh.position.x< -165)t.mesh.position.x=165});pedestrians.forEach(p=>{p.phase+=dt*.45;p.mesh.position.x=p.origin.x+Math.sin(p.phase)*2.2;p.mesh.position.z=p.origin.z+Math.cos(p.phase*.7)*.8;p.mesh.rotation.y=Math.cos(p.phase)>0?Math.PI/2:-Math.PI/2});signals.forEach(sig=>{const phase=(now*.001+sig.phase)%12,active=phase<5?0:phase<6?1:2;sig.lamps.forEach((l,i)=>l.material.emissiveIntensity=i===active?2.2:.12)})}
 let last=performance.now();function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-last)/1000,.04);last=now;
 let forward=(keys.w?1:0)-(keys.s?1:0),turn=(keys.a?1:0)-(keys.d?1:0);if(!inCar){if(keys.shift&&forward>0)stamina=Math.max(0,stamina-dt*22);else stamina=Math.min(100,stamina+dt*13)}
 if(inCar){
