@@ -16,17 +16,35 @@
 #start{position:fixed;inset:0;z-index:10;display:grid;place-items:center;background:linear-gradient(90deg,rgba(3,10,18,.93),rgba(3,10,18,.4)),linear-gradient(0deg,rgba(3,10,18,.8),transparent 65%);transition:opacity .7s}.startbox{width:min(680px,90vw)}.pretitle{font-size:10px;letter-spacing:5px;color:#ffbd72;font-weight:800}.startbox h1{font:900 clamp(58px,10vw,112px)/.78 'Barlow Condensed';letter-spacing:-2px;margin:17px 0 18px;text-transform:uppercase;text-shadow:0 8px 40px #000}.startbox h1 span{color:#ffb35c}.startbox p{max-width:430px;color:#c1cdd4;font-size:12px;line-height:1.8}.startbox button,#complete button{margin-top:22px;background:#ffb35c;color:#101923;border:0;padding:14px 28px;font:900 12px Inter;letter-spacing:2px;cursor:pointer}.foot{margin-top:48px;font-size:9px!important;letter-spacing:2px;color:#9aadb7!important}
 #complete{position:fixed;inset:0;z-index:9;display:none;place-items:center;background:rgba(3,10,18,.75);backdrop-filter:blur(8px)}#complete .panel{text-align:center;padding:40px;border:1px solid rgba(255,179,92,.5);background:#0a1a27}#complete h2{font:900 50px 'Barlow Condensed';margin:8px}#complete p{font-size:12px;color:#b9c9d3}
 @media(max-width:650px){#mission{top:90px;left:12px;width:225px;padding:12px}#stats{right:12px;top:auto;bottom:165px;flex-direction:column}.stat{min-width:70px;padding:7px 9px}#mapwrap{right:12px;bottom:12px;width:165px;height:165px}#mapwrap.expanded{width:min(90vw,430px);height:min(90vw,430px)}#top{left:12px;top:14px}#controls{left:12px;bottom:12px;font-size:8px}.logo{font-size:23px}}
+
+/* HUD 4.0 — minimal, contextual and transparent. */
+.logo{font:800 19px Inter;letter-spacing:2.5px}.logo span{color:#f2b66f}
+#district{font-size:8px;letter-spacing:2px}
+#mission{top:82px;left:22px;width:245px;padding:11px 13px;background:rgba(5,14,21,.58);border-left:2px solid #e9b36f;backdrop-filter:blur(14px)}
+#mission h2{font:700 16px Inter;margin:4px 0}#mission p{font-size:10px;margin:0 0 7px}#mission .eyebrow{font-size:8px}#objective{font-size:9px}
+#stats{top:18px;right:22px;gap:6px}.stat{min-width:82px;padding:7px 10px;background:rgba(5,14,21,.55);border:1px solid rgba(255,255,255,.12)}.stat small{font-size:7px}.stat strong{font:600 16px Inter}
+#mapwrap{right:22px;bottom:20px;width:190px;height:190px;padding:5px;background:rgba(5,14,21,.72);backdrop-filter:blur(12px)}#map-title{height:16px;display:flex;justify-content:space-between;padding:0 5px 4px;font-size:7px;letter-spacing:1px;color:#c9d7dd}#map-title b{color:#f2b66f}#map{height:calc(100% - 16px)}
+#player-hud{position:fixed;left:22px;bottom:88px;width:205px;padding:10px 12px;background:rgba(5,14,21,.62);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(12px);z-index:5}.hud-head,.wanted{display:flex;justify-content:space-between;font-size:7px;letter-spacing:1.2px;color:#aebfc7}.hud-head{margin-bottom:8px}.hud-head span:last-child{color:#f0bd7d}.meter{display:grid;grid-template-columns:65px 1fr 22px;align-items:center;gap:6px;margin:6px 0;font-size:7px;color:#c4d0d5}.meter div{height:3px;background:#ffffff25}.meter i{display:block;height:100%;width:100%;background:#9bc8ae}.meter:nth-child(3) i{background:#82b8d2}.meter b{font-size:8px;text-align:right;font-weight:500}.wanted{margin-top:8px;padding-top:7px;border-top:1px solid #ffffff1a}.wanted strong{font-size:12px;letter-spacing:2px;color:#e7b56f}
+#vehicle-hud{display:none;position:fixed;right:230px;bottom:24px;z-index:5;align-items:flex-end;gap:12px;padding:9px 13px;background:rgba(5,14,21,.68);border:1px solid #ffffff20;backdrop-filter:blur(12px)}.speed-read{display:flex;align-items:baseline;gap:5px}.speed-read strong{font:600 32px Inter;letter-spacing:-2px}.speed-read span,.gear small,.vehicle-condition{font-size:7px;letter-spacing:1px;color:#aebfc7}.gear{display:flex;flex-direction:column;gap:3px;border-left:1px solid #ffffff30;padding-left:12px}.gear span{font:600 20px Inter}
+#gps-label{position:fixed;right:22px;bottom:225px;z-index:5;display:flex;flex-direction:column;gap:3px;padding:7px 10px;background:rgba(5,14,21,.6);border-left:2px solid #e9b36f}#gps-label span{font-size:7px;letter-spacing:1.5px;color:#e9b36f}#gps-label b{font-size:9px;font-weight:500}
+#phone-hint{position:fixed;right:22px;top:65px;z-index:5;color:#ffffffa8;font-size:8px;letter-spacing:1px}#phone{display:none;position:fixed;right:25px;top:88px;z-index:8;width:210px;padding:14px;background:rgba(7,17,25,.95);border:1px solid #ffffff30;backdrop-filter:blur(18px)}#phone.open{display:block}.phone-top,.phone-foot{display:flex;justify-content:space-between;font-size:7px;letter-spacing:1px;color:#aebfc7}.phone-time{font:600 30px Inter;margin:18px 0}.phone-card{padding:10px;margin:8px 0;background:#ffffff0d}.phone-card small{display:block;color:#e9b36f;font-size:7px}.phone-card b{display:block;font-size:10px;margin:6px 0}.phone-card p{font-size:9px;line-height:1.5;color:#b8c7ce;margin:0}.phone-foot{margin-top:12px}
+#controls{font-size:8px;color:#ffffffa8}
+@media(max-width:650px){#player-hud{left:12px;bottom:175px;width:170px;padding:8px}#vehicle-hud{right:12px;bottom:190px;padding:7px;gap:7px}.speed-read strong{font-size:25px}#gps-label{right:12px;bottom:185px}#mapwrap{right:12px;bottom:12px;width:160px;height:160px}#phone{right:12px;top:88px}#phone-hint{right:12px}#mission{left:12px;top:78px;width:210px}#stats{right:12px;top:12px}.stat{min-width:65px;padding:6px}#controls{left:12px;bottom:12px;font-size:7px}}
 </style>
 </head>
 <body>
 <canvas id="game"></canvas><div id="vignette"></div>
 <div id="top"><div class="logo">VICE CITY <span>STORIES</span></div><div id="district">SUNSET DISTRICT · 1986</div></div>
 <div id="mission"><div class="eyebrow" id="missionType">MISSÃO · 01</div><h2 id="missionTitle">PRIMEIRO DIA NA CIDADE</h2><p id="missionDesc">Entra no teu carro e prepara-te para a primeira tarefa.</p><div id="objective">Encontra o carro junto à praça</div></div>
-<div id="stats"><div class="stat"><small>DINHEIRO</small><strong id="money">€ 250</strong></div><div class="stat"><small>VELOCIDADE</small><strong id="speed">0 KM/H</strong></div><div class="stat"><small>MISSÕES</small><strong id="discoveries">0 / 3</strong></div></div>
-<div id="mapwrap"><canvas id="map" width="300" height="300"></canvas></div>
-<div id="controls"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> MOVER / CONDUZIR<br><kbd>SHIFT</kbd> CORRER &nbsp; <kbd>E</kbd> ENTRAR / SAIR<br><kbd>R</kbd> REPOSICIONAR &nbsp; <kbd>F</kbd> MISSÃO<br><kbd>V</kbd> MUDAR CÂMARA &nbsp; <kbd>M</kbd> MAPA</div>
+<div id="stats"><div class="stat"><small>SALDO</small><strong id="money">€ 250</strong></div><div class="stat"><small>MISSÕES</small><strong id="discoveries">0 / 3</strong></div></div>
+<div id="player-hud"><div class="hud-head"><span>ESTADO DO JOGADOR</span><span id="player-state">A PÉ</span></div><div class="meter"><span>VIDA</span><div><i id="health-bar"></i></div><b id="health-value">100</b></div><div class="meter"><span>COLETE</span><div><i id="armor-bar"></i></div><b id="armor-value">50</b></div><div class="meter"><span>RESISTÊNCIA</span><div><i id="stamina-bar"></i></div><b id="stamina-value">100</b></div><div class="wanted"><span>PROCURADO</span><strong id="wanted-stars">☆☆☆☆☆</strong></div></div>
+<div id="vehicle-hud"><div class="speed-read"><strong id="speed">000</strong><span>KM/H</span></div><div class="gear"><span id="gear">N</span><small>MUDANÇA</small></div><div class="vehicle-condition">VEÍCULO <b>100%</b></div></div>
+<div id="phone-hint">[ P ] TELEMÓVEL</div><div id="phone"><div class="phone-top"><span>VICE MOBILE</span><span>●●● 4G</span></div><div class="phone-time">09:41</div><div class="phone-card"><small>MENSAGENS</small><b>Tommy — novo trabalho</b><p>Passa pelo Café Sunset. Tenho uma entrega para ti.</p></div><div class="phone-card"><small>CONTACTOS</small><b>Serviços da cidade</b><p>Sem chamadas recentes.</p></div><div class="phone-foot">P PARA FECHAR</div></div>
+<div id="gps-label"><span>GPS</span><b id="gps-distance">SEM DESTINO</b></div>
+<div id="mapwrap"><div id="map-title"><span>MAPA</span><b id="map-area">SUNSET DISTRICT</b></div><canvas id="map" width="300" height="300"></canvas></div>
+<div id="controls"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> MOVER / CONDUZIR<br><kbd>SHIFT</kbd> CORRER &nbsp; <kbd>E</kbd> ENTRAR / SAIR<br><kbd>R</kbd> REPOSICIONAR &nbsp; <kbd>F</kbd> MISSÃO<br><kbd>V</kbd> CÂMARA &nbsp; <kbd>M</kbd> MAPA &nbsp; <kbd>P</kbd> TELEMÓVEL</div>
 <div id="toast"></div>
-<div id="start"><div class="startbox"><div class="pretitle">UMA CIDADE. MIL HISTÓRIAS.</div><h1>VICE CITY<br><span>STORIES</span></h1><p>Explora uma cidade costeira inspirada nos anos 80. Conduz, descobre novos locais e percorre uma cidade construída para explorar.</p><button id="play">ENTRAR NA CIDADE&nbsp; →</button><p class="foot">VERSÃO 3.0 · EXPANDED CITY</p></div></div>
+<div id="start"><div class="startbox"><div class="pretitle">UMA CIDADE. MIL HISTÓRIAS.</div><h1>VICE CITY<br><span>STORIES</span></h1><p>Explora uma cidade costeira inspirada nos anos 80. Conduz, descobre novos locais e percorre uma cidade construída para explorar.</p><button id="play">ENTRAR NA CIDADE&nbsp; →</button><p class="foot">VERSÃO 4.0 · IMMERSIVE HUD</p></div></div>
 <div id="complete"><div class="panel"><div class="eyebrow">Missão concluída</div><h2>JÁ ÉS DA CIDADE.</h2><p>Visitaste os três locais principais de Sunset District.</p><h2 style="color:#ffb35c">+ € 450</h2><button id="again">CONTINUAR A EXPLORAR</button></div></div>
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
@@ -50,7 +68,7 @@ let seed=27;function rand(){seed=(seed*9301+49297)%233280;return seed/233280}
 const buildingMats=[mat(0xe5c9a6),mat(0xd6a98e),mat(0xc5d2cb),mat(0xe9d9b9),mat(0xb6c7c5),mat(0xd8b8c2),mat(0xaaaeb1)];
 for(let ix=-5;ix<=4;ix++)for(let iz=-5;iz<=4;iz++){
  const cx=ix*30+15,cz=iz*30+15;if(cz<-158)continue;
- if([[-15,-45],[45,-45],[45,45],[-105,75],[105,-105],[-105,-105]].some(([x,z])=>cx===x&&cz===z))continue;
+ if([[-15,-45],[45,-45],[45,45],[-105,75],[105,-165],[-105,-105]].some(([x,z])=>cx===x&&cz===z))continue;
  // Leave the starting square open and keep a clear waterfront promenade.
  if(Math.abs(cx)<16&&Math.abs(cz)<16)continue;
  const w=7.5+rand()*1.8,d=7.5+rand()*1.8,h=8+rand()*25;
@@ -73,8 +91,42 @@ for(let x=-150;x<=150;x+=14){palm(x,-150,.9);palm(x,-165,.75)}
 // Distinct landmark buildings and signs.
 function landmark(x,z,color,name){box(scene,x,2.5,z,10,5,9,mat(color));box(scene,x,4.7,z+4.58,7,.65,.12,white,false);const sign=new THREE.Mesh(new THREE.BoxGeometry(5,.35,.08),mat(0xffc15e));sign.position.set(x,4.75,z+4.68);scene.add(sign)}
 landmark(-15,-45,0xd57b68,'MOTEL');landmark(45,-45,0x5b9b9b,'CAFE');landmark(45,45,0xd7b45d,'MARKET');
-landmark(-105,75,0x9cabb1,'HOSPITAL');landmark(105,-105,0x4c8a9d,'MARINA');landmark(-105,-105,0xb18b6c,'STADIUM');
-for(const [x,z] of [[-15,-45],[45,-45],[45,45],[-105,75],[105,-105],[-105,-105]])buildingColliders.push({minX:x-6.3,maxX:x+6.3,minZ:z-5.8,maxZ:z+5.8});
+
+// Hospital: multi-wing medical centre with a raised tower and red cross.
+function buildHospital(x,z){
+ const concrete=mat(0xd9e0df),blueGlass=mat(0x78a9b6,.25),red=mat(0xc94e4e);
+ box(scene,x,3,z,15,6,13,concrete);box(scene,x,8,z-1,11,4,10,white);box(scene,x,13,z-1,8,6,8,concrete);
+ box(scene,x-9,2.4,z+1,5,4.8,10,concrete);box(scene,x+9,2.4,z+1,5,4.8,10,concrete);
+ for(let y=2;y<=15;y+=2.5)for(let xx=-3;xx<=3;xx+=2)box(scene,x+xx,y,z+3.08,1.25,1.2,.08,blueGlass,false);
+ box(scene,x,16.2,z-1,5,.45,5,red,false);box(scene,x,16.2,z-1,.65,.5,3.2,white,false);box(scene,x,16.2,z-1,3.2,.5,.65,white,false);
+ box(scene,x,0,z+8,13,.25,2,sidewalk,false);buildingColliders.push({minX:x-12,maxX:x+12,minZ:z-7,maxZ:z+7});
+}
+buildHospital(-105,75);
+// Stadium: open oval arena, visible seating tiers and roof ring.
+function buildStadium(x,z){
+ const tierMat=[mat(0x9a8068),mat(0xc0a17c),mat(0xe1c89c)];
+ for(let i=0;i<3;i++){const radius=19-i*3;const tier=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius-1,2,40,1,true),tierMat[i]);tier.position.set(x,2+i*2,z);scene.add(tier)}
+ const field=new THREE.Mesh(new THREE.CircleGeometry(8.4,32),mat(0x5e9167));field.rotation.x=-Math.PI/2;field.position.set(x,.25,z);scene.add(field);
+ const roof=new THREE.Mesh(new THREE.TorusGeometry(17,.8,8,48),mat(0xe4e0d4));roof.rotation.x=Math.PI/2;roof.position.set(x,8,z);scene.add(roof);
+ for(let a=0;a<Math.PI*2;a+=Math.PI/12){const p=new THREE.Mesh(new THREE.CylinderGeometry(.18,.25,7,6),mat(0x66747a));p.position.set(x+Math.cos(a)*16,4,z+Math.sin(a)*13);scene.add(p)}
+ box(scene,x,0,z+18,15,.25,3,sidewalk,false);buildingColliders.push({minX:x-20,maxX:x+20,minZ:z-16,maxZ:z+16});
+}
+buildStadium(-105,-105);
+// Marina moved to the actual waterfront, with terminal, piers and moored boats.
+function buildMarina(x,z){
+ const wood=mat(0x8b684b),paint=mat(0xe6e0d2),boatBlue=mat(0x315d70),mast=mat(0xd7d3c5);
+ box(scene,x,1.1,z,17,2.2,12,paint);box(scene,x,2.35,z-1,12,.35,7,mat(0x4c7b85));
+ for(let i=-2;i<=2;i++)box(scene,x+i*2.2,3.1,z-1,1.5,1.2,.15,glass,false);
+ box(scene,x,0,z-16,5,.35,28,wood,false);
+ for(let zz=z-28;zz<=z-4;zz+=6)for(const xx of [-2.2,2.2]){const post=new THREE.Mesh(new THREE.CylinderGeometry(.16,.2,2,8),trunkMat);post.position.set(x+xx,0,zz);scene.add(post)}
+ for(const side of [-1,1]){
+  box(scene,x+side*12,0,z-25,19,.3,3.5,wood,false);
+  for(let j=0;j<2;j++){const boat=new THREE.Group();box(boat,0,.3,0,2.2,.55,6,boatBlue);box(boat,0,.9,-.3,1.4,.8,2,paint);const pole=new THREE.Mesh(new THREE.CylinderGeometry(.06,.06,3,6),mast);pole.position.set(0,2.5,-.2);boat.add(pole);boat.position.set(x+side*(12+j*2),-.1,z-21-j*8);scene.add(boat)}
+ }
+ box(scene,x,0,z-31,10,.3,4,wood,false);buildingColliders.push({minX:x-10,maxX:x+10,minZ:z-7,maxZ:z+7});
+}
+buildMarina(105,-158);
+for(const [x,z] of [[-15,-45],[45,-45],[45,45]])buildingColliders.push({minX:x-6.3,maxX:x+6.3,minZ:z-5.8,maxZ:z+5.8});
 // Player character.
 const player=new THREE.Group();scene.add(player);box(player,0,1.05,0,.75,1.05,.42,blue);const head=new THREE.Mesh(new THREE.SphereGeometry(.3,16,12),mat(0xc98f6a));head.position.y=1.88;player.add(head);const hair=new THREE.Mesh(new THREE.SphereGeometry(.31,12,8),dark);hair.scale.y=.45;hair.position.set(0,2.08,0);player.add(hair);box(player,-.2,.32,0,.23,.64,.28,dark);box(player,.2,.32,0,.23,.64,.28,dark);player.position.set(0,0,0);
 function makeCar(color=0xe8a64f){const g=new THREE.Group();box(g,0,.55,0,2.2,.65,4.2,mat(color,.35,.3));box(g,0,1.05,-.15,1.8,.7,2.15,glass);box(g,0,.26,1.95,1.9,.18,.12,white,false);for(const x of [-1,1])for(const z of [-1.35,1.35]){const w=new THREE.Mesh(new THREE.CylinderGeometry(.37,.37,.2,16),dark);w.rotation.z=Math.PI/2;w.position.set(x*1.08,.38,z);g.add(w)}for(const x of [-.72,.72]){box(g,x,.65,2.12,.25,.18,.08,white,false);box(g,x,.65,-2.12,.25,.18,.08,pink,false)}return g}
@@ -88,8 +140,8 @@ const missions=[
 ];
 const checkpoints=missions.map(m=>m.point);
 const rings=[];checkpoints.forEach(p=>{const ring=new THREE.Mesh(new THREE.TorusGeometry(2.6,.23,8,32),yellow);ring.rotation.x=Math.PI/2;ring.position.set(p.x,1.5,p.z);scene.add(ring);const beam=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,4,8),new THREE.MeshBasicMaterial({color:0xffbb66,transparent:true,opacity:.28}));beam.position.set(p.x,2,p.z);scene.add(beam);rings.push(ring)});
-let checkpointIndex=0,gameStarted=false,missionStarted=false,missionDone=false,inCar=false,activeCar=car,carSpeed=0,heading=0,toastTimer,cameraMode='third',mapExpanded=false;
-const keys={};addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(!keys[k]&&k==='f')startMission();keys[k]=true;if(['w','a','s','d',' '].includes(k))e.preventDefault();if(k==='e')toggleCar();if(k==='r')resetPosition();if(k==='v')toggleCamera();if(k==='m')toggleMap()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+let checkpointIndex=0,gameStarted=false,missionStarted=false,missionDone=false,inCar=false,activeCar=car,carSpeed=0,heading=0,toastTimer,cameraMode='third',mapExpanded=false,stamina=100,phoneOpen=false,health=100,armor=50;
+const keys={};addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(!keys[k]&&k==='f')startMission();keys[k]=true;if(['w','a','s','d',' '].includes(k))e.preventDefault();if(k==='e')toggleCar();if(k==='r')resetPosition();if(k==='v')toggleCamera();if(k==='m')toggleMap();if(k==='p')togglePhone()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
 function toast(t){const el=document.querySelector('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2300)}
 function updateObjective(){
  const o=document.querySelector('#objective'),m=missions[checkpointIndex];
@@ -101,6 +153,7 @@ function updateObjective(){
 function toggleCar(){if(!gameStarted)return;if(!inCar){let nearest=null,dist=5.5;for(const c of cars){const d=player.position.distanceTo(c.position);if(d<dist){nearest=c;dist=d}}if(nearest){activeCar=nearest;inCar=true;player.visible=false;carSpeed=0;toast('ENTRASTE NO VEÍCULO');updateObjective()}else toast('APROXIMA-TE DE UM CARRO')}else{inCar=false;player.visible=true;const sideX=Math.cos(activeCar.rotation.y)*2.2,sideZ=-Math.sin(activeCar.rotation.y)*2.2;let ex=activeCar.position.x+sideX,ez=activeCar.position.z+sideZ;if(collides(ex,ez,.65)){ex=activeCar.position.x-sideX;ez=activeCar.position.z-sideZ;}player.position.set(ex,0,ez);heading=activeCar.rotation.y;player.rotation.y=heading;carSpeed=0;updateObjective()}}
 function toggleCamera(){cameraMode=cameraMode==='third'?'first':'third';toast(cameraMode==='first'?'CÂMARA: PRIMEIRA PESSOA':'CÂMARA: TERCEIRA PESSOA')}
 function toggleMap(){mapExpanded=!mapExpanded;document.querySelector('#mapwrap').classList.toggle('expanded',mapExpanded);toast(mapExpanded?'MAPA DA CIDADE':'MINIMAPA')}
+function togglePhone(){phoneOpen=!phoneOpen;document.querySelector('#phone').classList.toggle('open',phoneOpen)}
 function start(){document.querySelector('#start').style.opacity=0;setTimeout(()=>document.querySelector('#start').style.display='none',700);gameStarted=true;toast('BEM-VINDO A VICE CITY');updateObjective()}
 function startMission(){if(!missionStarted){missionStarted=true;updateObjective();toast('MISSÃO ACEITE: '+missions[0].title);return;}if(missionDone){toast('JÁ CONCLUÍSTE OS TRABALHOS INICIAIS');return;}toast('MISSÃO ATIVA: '+missions[checkpointIndex].target)}
 document.querySelector('#play').onclick=start;document.querySelector('#again').onclick=()=>document.querySelector('#complete').style.display='none';
@@ -133,27 +186,28 @@ function drawMap(){
  ctx.clearRect(0,0,300,300);ctx.fillStyle='#1b3038';ctx.fillRect(0,0,300,300);
  ctx.fillStyle='#56636a';for(let n=-5;n<=5;n++){const p=150+n*30*.78;ctx.fillRect(p-4,0,8,300);ctx.fillRect(0,p-4,300,8)}
  ctx.fillStyle='#36899b';ctx.fillRect(0,0,300,24);ctx.fillStyle='#d4b88d';ctx.fillRect(0,24,300,5);
- const mapPoints=[{name:'CAFÉ',x:45,z:-45,color:'#ffbd72'},{name:'MOTEL',x:-15,z:-45,color:'#ffbd72'},{name:'MERCADO',x:45,z:45,color:'#ffbd72'},{name:'HOSPITAL',x:-105,z:75,color:'#8ed1df'},{name:'MARINA',x:105,z:-105,color:'#8ed1df'},{name:'ESTÁDIO',x:-105,z:-105,color:'#8ed1df'}];
+ const mapPoints=[{name:'CAFÉ',x:45,z:-45,color:'#ffbd72'},{name:'MOTEL',x:-15,z:-45,color:'#ffbd72'},{name:'MERCADO',x:45,z:45,color:'#ffbd72'},{name:'HOSPITAL',x:-105,z:75,color:'#8ed1df'},{name:'MARINA',x:105,z:-183,color:'#8ed1df'},{name:'ESTÁDIO',x:-105,z:-105,color:'#8ed1df'}];
  mapPoints.forEach((p,i)=>{const active=missionStarted&&!missionDone&&i===checkpointIndex;const x=150+p.x*.78,y=150+p.z*.78;ctx.fillStyle=active?'#ffbd72':p.color;ctx.beginPath();ctx.arc(x,y,active?7:4,0,Math.PI*2);ctx.fill();ctx.font=active?'bold 10px Inter':'8px Inter';ctx.textAlign='center';ctx.fillStyle=active?'#fff':'#c7d5d9';ctx.fillText(p.name,x,y-8)});
  const actor=inCar?activeCar:player,p=actor.position,yaw=actor.rotation.y;
  const mx=150+p.x*.78,my=150+p.z*.78;
  // Direction arrow: points in the exact direction the player/car is facing.
  // Draw the arrow from the actor's actual forward vector (+Z rotated by yaw).
  const fx=Math.sin(yaw),fy=Math.cos(yaw),px=fy,py=-fx;
+ if(missionStarted&&!missionDone){const dest=missions[checkpointIndex].point;ctx.strokeStyle='rgba(255,190,112,.85)';ctx.lineWidth=2;ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(mx,my);ctx.lineTo(150+dest.x*.78,150+dest.z*.78);ctx.stroke();ctx.setLineDash([])}
  ctx.fillStyle='#fff';ctx.strokeStyle='#0b1720';ctx.lineWidth=2;
  ctx.beginPath();ctx.moveTo(mx+fx*12,my+fy*12);ctx.lineTo(mx-fx*8+px*6,my-fy*8+py*6);ctx.lineTo(mx-fx*4,my-fy*4);ctx.lineTo(mx-fx*8-px*6,my-fy*8-py*6);ctx.closePath();ctx.fill();ctx.stroke();
 }
 let last=performance.now();function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-last)/1000,.04);last=now;
-let forward=(keys.w?1:0)-(keys.s?1:0),turn=(keys.a?1:0)-(keys.d?1:0);
+let forward=(keys.w?1:0)-(keys.s?1:0),turn=(keys.a?1:0)-(keys.d?1:0);if(!inCar){if(keys.shift&&forward>0)stamina=Math.max(0,stamina-dt*22);else stamina=Math.min(100,stamina+dt*13)}
 if(inCar){
  carSpeed+=forward*dt*16;carSpeed*=Math.pow(.982,dt*60);carSpeed=THREE.MathUtils.clamp(carSpeed,-9,22);
  // No steering while stationary; steering progressively increases with rolling speed.
  const steeringFactor=Math.min(Math.abs(carSpeed)/7,1);
  if(steeringFactor>.015)activeCar.rotation.y+=turn*dt*1.65*steeringFactor*(carSpeed<0?-1:1);
  moveCar(Math.sin(activeCar.rotation.y)*carSpeed*dt,Math.cos(activeCar.rotation.y)*carSpeed*dt);
- document.querySelector('#speed').textContent=Math.round(Math.abs(carSpeed)*5)+' KM/H'
+ document.querySelector('#speed').textContent=String(Math.round(Math.abs(carSpeed)*5)).padStart(3,'0');document.querySelector('#gear').textContent=carSpeed>1?'D':carSpeed< -1?'R':'N';document.querySelector('#vehicle-hud').style.display='flex';document.querySelector('#player-state').textContent='A CONDUZIR'
 }
-else{const move=forward*(keys.shift?9:5.5)*dt;heading+=turn*dt*2.4;player.rotation.y=heading;const nx=player.position.x+Math.sin(heading)*move,nz=player.position.z+Math.cos(heading)*move;if(!collides(nx,player.position.z,.65))player.position.x=nx;if(!collides(player.position.x,nz,.65))player.position.z=nz;document.querySelector('#speed').textContent='0 KM/H'}
+else{const move=forward*(keys.shift?9:5.5)*dt;heading+=turn*dt*2.4;player.rotation.y=heading;const nx=player.position.x+Math.sin(heading)*move,nz=player.position.z+Math.cos(heading)*move;if(!collides(nx,player.position.z,.65))player.position.x=nx;if(!collides(player.position.x,nz,.65))player.position.z=nz;document.querySelector('#speed').textContent='000';document.querySelector('#gear').textContent='N';document.querySelector('#vehicle-hud').style.display='none';document.querySelector('#player-state').textContent='A PÉ'}
 rings.forEach((r,i)=>{r.rotation.z+=dt*.65;r.visible=missionStarted&&!missionDone&&i===checkpointIndex});
 const actor=inCar?activeCar:player;if(missionStarted&&!missionDone&&checkpointIndex<missions.length&&actor.position.distanceTo(checkpoints[checkpointIndex])<9){
  const reward=missions[checkpointIndex].reward;const total=250+missions.slice(0,checkpointIndex+1).reduce((sum,m)=>sum+m.reward,0);
@@ -163,7 +217,9 @@ const actor=inCar?activeCar:player;if(missionStarted&&!missionDone&&checkpointIn
  else toast('MISSÃO CONCLUÍDA · +€'+reward+' | PRÓXIMA: '+missions[checkpointIndex].title);
 }
 if(cameraMode==='first'){const eyeY=inCar?1.35:1.68;const eyeOffset=inCar?.45:0;const eye=new THREE.Vector3(actor.position.x+Math.sin(actor.rotation.y)*eyeOffset,eyeY,actor.position.z+Math.cos(actor.rotation.y)*eyeOffset);const look=new THREE.Vector3(actor.position.x+Math.sin(actor.rotation.y)*24,eyeY,actor.position.z+Math.cos(actor.rotation.y)*24);camera.position.lerp(eye,1-Math.pow(.00001,dt));camera.lookAt(look)}else{const desired=new THREE.Vector3(actor.position.x+Math.sin(actor.rotation.y)*-11,8,actor.position.z+Math.cos(actor.rotation.y)*-11);camera.position.lerp(desired,1-Math.pow(.001,dt));camera.lookAt(actor.position.x,1.2,actor.position.z)}
-drawMap();renderer.render(scene,camera)}
+const target=missionStarted&&!missionDone?missions[checkpointIndex].point:null;const dist=target?Math.round(actor.position.distanceTo(target)):0;document.querySelector('#gps-distance').textContent=target?dist+' M · '+missions[checkpointIndex].target.toUpperCase():'SEM DESTINO';
+const staminaPct=Math.round(stamina);document.querySelector('#stamina-bar').style.width=staminaPct+'%';document.querySelector('#stamina-value').textContent=staminaPct;document.querySelector('#health-bar').style.width=health+'%';document.querySelector('#health-value').textContent=health;document.querySelector('#armor-bar').style.width=armor+'%';document.querySelector('#armor-value').textContent=armor;
+const area=actor.position.z < -120?'OCEANFRONT':actor.position.x < -60?'WESTSIDE':actor.position.x > 60?'EAST BAY':actor.position.z > 60?'SOUTH DOWNTOWN':'SUNSET DISTRICT';document.querySelector('#map-area').textContent=area;document.querySelector('#district').textContent=area+' · VICE CITY · 1986';drawMap();renderer.render(scene,camera)}
 requestAnimationFrame(animate);
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2))});
 </script>
