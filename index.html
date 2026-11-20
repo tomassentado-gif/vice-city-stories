@@ -42,8 +42,8 @@ const ground=new THREE.Mesh(new THREE.PlaneGeometry(600,600),mat(0x9caa91));grou
 function box(parent,x,y,z,w,h,d,material,shadow=true){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);o.position.set(x,y,z);o.castShadow=shadow;o.receiveShadow=true;parent.add(o);return o}
 const roadGroup=new THREE.Group();scene.add(roadGroup);
 const roadLines=[];for(let n=-3;n<=3;n++)roadLines.push(n*30);
-for(const z of roadLines){box(roadGroup,0,-.09,z,220,.18,14,asphalt,false);box(roadGroup,0,.012,z,220,.025,.16,yellow,false);for(let x=-105;x<110;x+=10)box(roadGroup,x,.014,z+3.5,4,.025,.13,white,false)}
-for(const x of roadLines){box(roadGroup,x,-.09,0,14,.18,220,asphalt,false);box(roadGroup,x,.012,0,.16,.025,220,yellow,false);for(let z=-105;z<110;z+=10)box(roadGroup,x+3.5,.014,z,.13,.025,4,white,false)}
+for(const z of roadLines){box(roadGroup,0,-.09,z,220,.18,14,asphalt,false);box(roadGroup,0,.012,z,220,.025,.16,yellow,false);for(let x=-105;x<110;x+=10){box(roadGroup,x,.014,z-3.5,4,.025,.13,white,false);box(roadGroup,x,.014,z+3.5,4,.025,.13,white,false)}}
+for(const x of roadLines){box(roadGroup,x,-.09,0,14,.18,220,asphalt,false);box(roadGroup,x,.012,0,.16,.025,220,yellow,false);for(let z=-105;z<110;z+=10){box(roadGroup,x-3.5,.014,z,.13,.025,4,white,false);box(roadGroup,x+3.5,.014,z,.13,.025,4,white,false)}}
 // Pavements and properly aligned city blocks: buildings sit BETWEEN roads, never on road surfaces.
 const buildingColliders=[];
 let seed=27;function rand(){seed=(seed*9301+49297)%233280;return seed/233280}
@@ -81,9 +81,9 @@ const car=makeCar();car.position.set(5,0,5);scene.add(car);const cars=[car];
 for(let i=0;i<5;i++){const c=makeCar([0x4f91a8,0xe7d4b1,0xc86f64,0x4d665b,0xe1b64e][i]);c.position.set(-75+i*30,0,90);c.rotation.y=Math.PI/2;scene.add(c);cars.push(c)}
 // Mission checkpoints, each activated in sequence whether on foot or in a vehicle.
 const missions=[
- {title:'ENTREGA EXPRESSA',desc:'Leva a encomenda até ao Café Sunset.',target:'Café Sunset',point:new THREE.Vector3(30,0,-30),reward:200},
- {title:'RECOLHA NO MOTEL',desc:'Vai buscar o pacote que ficou no motel.',target:'Motel Ocean',point:new THREE.Vector3(-30,0,-30),reward:250},
- {title:'ÚLTIMA ENTREGA',desc:'Entrega o pacote no Mercado Central.',target:'Mercado Central',point:new THREE.Vector3(30,0,30),reward:300}
+ {title:'ENTREGA EXPRESSA',desc:'Leva a encomenda até ao Café Sunset.',target:'Café Sunset',point:new THREE.Vector3(45,0,-45),reward:200},
+ {title:'RECOLHA NO MOTEL',desc:'Vai buscar o pacote que ficou no motel.',target:'Motel Ocean',point:new THREE.Vector3(-15,0,-45),reward:250},
+ {title:'ÚLTIMA ENTREGA',desc:'Entrega o pacote no Mercado Central.',target:'Mercado Central',point:new THREE.Vector3(45,0,45),reward:300}
 ];
 const checkpoints=missions.map(m=>m.point);
 const rings=[];checkpoints.forEach(p=>{const ring=new THREE.Mesh(new THREE.TorusGeometry(2.6,.23,8,32),yellow);ring.rotation.x=Math.PI/2;ring.position.set(p.x,1.5,p.z);scene.add(ring);const beam=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,4,8),new THREE.MeshBasicMaterial({color:0xffbb66,transparent:true,opacity:.28}));beam.position.set(p.x,2,p.z);scene.add(beam);rings.push(ring)});
@@ -130,11 +130,11 @@ function drawMap(){
  ctx.clearRect(0,0,300,300);ctx.fillStyle='#1b3038';ctx.fillRect(0,0,300,300);
  ctx.fillStyle='#56636a';for(let n=-3;n<=3;n++){const p=150+n*30*.95;ctx.fillRect(p-5,0,10,300);ctx.fillRect(0,p-5,300,10)}
  ctx.fillStyle='#36899b';ctx.fillRect(0,0,300,27);ctx.fillStyle='#d4b88d';ctx.fillRect(0,27,300,5);
- checkpoints.forEach((p,i)=>{if(i>=checkpointIndex){ctx.fillStyle=i===checkpointIndex?'#ffbd72':'#7e9ba4';ctx.beginPath();ctx.arc(150+p.x*.95,150+p.z*.95,6,0,Math.PI*2);ctx.fill()}});
+ checkpoints.forEach((p,i)=>{const active=missionStarted&&!missionDone&&i===checkpointIndex;ctx.fillStyle=active?'#ffbd72':'#7e9ba4';ctx.beginPath();ctx.arc(150+p.x*.95,150+p.z*.95,active?8:5,0,Math.PI*2);ctx.fill();ctx.font=active?'bold 11px Inter':'9px Inter';ctx.textAlign='center';ctx.fillStyle=active?'#fff':'#c7d5d9';ctx.fillText(['CAFÉ','MOTEL','MERCADO'][i],150+p.x*.95,150+p.z*.95-11)});
  const actor=inCar?activeCar:player,p=actor.position,yaw=actor.rotation.y;
  const mx=150+p.x*.95,my=150+p.z*.95;
  // Direction arrow: points in the exact direction the player/car is facing.
- ctx.save();ctx.translate(mx,my);ctx.rotate(yaw);ctx.fillStyle='#fff';ctx.strokeStyle='#0b1720';ctx.lineWidth=2;
+ ctx.save();ctx.translate(mx,my);ctx.rotate(yaw+Math.PI);ctx.fillStyle='#fff';ctx.strokeStyle='#0b1720';ctx.lineWidth=2;
  ctx.beginPath();ctx.moveTo(0,10);ctx.lineTo(-7,-7);ctx.lineTo(0,-3);ctx.lineTo(7,-7);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();
 }
 let last=performance.now();function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-last)/1000,.04);last=now;
